@@ -1,0 +1,618 @@
+{%extends "base2.html" %}
+
+{%block content%}
+ 
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.structure.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css">
+<script src="/static/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<script src="/static/jasonday-printThis-0aa7434/printThis.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+<div id="observation_print">
+<style>
+.columns{display : flex;
+		justify-content:flex-start}
+
+.body_columns{display:flex;
+		justify-content:flex-start; 
+		width:100%}
+.mini_columns{display:flex;
+		justify-content:flex-start; 
+		width:100%}
+
+.mini-cols{width:20%}
+
+.mini-cols-2{width:80%}
+.mini-cols-3{width:20%}
+
+.cols-top{display : flex;
+		justify-content:flex-start;
+		margin-top:0.75em}
+
+.text_columns{display : flex;
+		justify-content:flex-start;}
+
+.cols{font-size : 115%}
+
+.top-1{text-align : right;
+	width : 15%}
+
+.top-2{width : 35%}
+
+.top-3{text-align : right;
+	width : 7%}
+
+.top-4{width : 3%}
+
+.top-5{text-align : right;
+	width : 15%}
+
+.top-6{width : 25%}
+
+.body_select_left{width:3%;
+		text-align:right;
+		border-top:2px solid black;
+		border-left:2px solid black;
+		padding-right:0.25em}
+
+.body_select_middle{width:22%;
+		text-align:left;
+		border-top:2px solid black;
+		border-left:2px solid black;
+		border-right:2px solid black;
+		padding-left:0.25em}
+
+.body_select_right{width:30%;
+		text-align:center;
+		border-top:2px solid black;
+		border-right:2px solid black;
+		padding-right:0.25em;
+		padding-left:0.25em}
+.body_select_pad{width:22.5%;}
+
+
+
+</style>
+
+<div style='text-align: center; margin-top:0.5em'><h4>ST. JOHNS COUNTY SCHOOL DISTRICT</h4><h4>Intervention Services, 40 Orange Street, St. Augustine, FL 32084</h4><h4><b><u>Student Observation</b></u></h4>
+				<p style="font-size:120%; margin-top:0.5em">(Observation should be completed by a member of the MTSS/RtI Team.)</p>
+</div>
+{%set name=student.student_name.split(',')%}
+<form id= "observation_form">
+<div class="container" style="width:98%; max-width:1500px; min-width:1000px; margin-top:0.5em">
+		<div class="columns">
+			<div class="cols top-1">Student:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text" value="{{name[1].strip()}} {{name[0]}}" readonly style="width:100%; background:gainsboro"/></div>
+			<div class="cols top-3">Grade:&ensp;</div>
+			<div class="cols top-4"><input type="text" class="top-text" value="{%if student.grade==0%}K{%else%}{{student.grade}}{%endif%}" readonly style="width:100%; background:gainsboro"/></div>
+			<div class="cols top-5">Observation Date:&ensp;</div>
+			<div class="cols top-6"><input type="date" class="top-text change" name="observation_date" {%if observation.observation_date%}value="{{observation.observation_date}}"{%endif%}" style="width:100%; background:beige"/></div>
+		</div>
+		<div class="cols-top">
+			<div class="cols top-1">School:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text" value="{{student.school}}" readonly style="width:100%; background:gainsboro"/></div>
+			<div class="cols top-1">Teacher:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text change" name="observation_teacher" {%if observation.observation_teacher%}value="{{observation.observation_teacher}}"{%endif%} style="width:100%; background:beige"/></div>
+		</div>
+		<div class="cols-top">
+			<div class="cols top-1">Observer's Name:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text change" name="observer_name" {%if observation.observer_name%}value="{{observation.observer_name}}"{%endif%}" style="width:100%; background:beige"/></div>
+			<div class="cols top-1">Observer's title:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text change" name="observer_title" {%if observation.observer_title%}value="{{observation.observer_title}}"{%endif%} style="width:100%; background:beige"/></div>
+		</div>
+		<div class="cols-top" style="align-items:center; font-size:120%">
+			<div style="width: 25%; text-align:right; padding-right:0.25em">Circumstances of Observation:(Subject, teacher, time of day, reason for observation, etc.)</div>
+			<div style="width:75%"><textarea name="c_circumstance" class="change" {%if observation.observation_final==False%}style="background:beige; width:100%"{%else%}style="background:gainsboro; width:100%" readonly{%endif%} rows=4>{%if observation.c_circumstance%}{{observation.c_circumstance}}{%endif%}</textarea>
+			</div>
+		</div>
+
+	<div style='text-align: center; margin-top:0.75em; font-size:120%'>
+	<b>A. Compare this student's performance with that of the majority of other students in the class.</b>
+	</div>
+
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">1.</div>
+		<div class="body_select_middle">Pace of Work</div>
+		<div class="body_select_right">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_1">
+					<option></option>
+					<option value="more slowly" {%if observation.c_a_question_1=='more slowly'%}selected{%endif%}>more slowly</option>
+					<option value="more quickly" {%if observation.c_a_question_1=='more quickly'%}selected{%endif%}>more quickly</option>
+					<option value="about the same" {%if observation.c_a_question_1=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_1" value="{{observation.c_a_question_1}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">2.</div>
+		<div class="body_select_middle">Focus & attention span</div>
+		<div class="body_select_right">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_2">
+					<option></option>
+					<option value="better" {%if observation.c_a_question_2=='better'%}selected{%endif%}>better</option>
+					<option value="poorer" {%if observation.c_a_question_2=='poorer'%}selected{%endif%}>poorer</option>
+					<option value="about the same" {%if observation.c_a_question_2=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_2" value="{{observation.c_a_question_2}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">3.</div>
+		<div class="body_select_middle">Activity level of the student</div>
+		<div class="body_select_right">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_3">
+					<option></option>
+					<option value="more active" {%if observation.c_a_question_3=='more active'%}selected{%endif%}>more active</option>
+					<option value="less active" {%if observation.c_a_question_3=='less active'%}selected{%endif%}>less active</option>
+					<option value="about the same" {%if observation.c_a_question_3=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_3" value="{{observation.c_a_question_3}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">4.</div>
+		<div class="body_select_middle">Language Skills</div>
+		<div class="body_select_right">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_4">
+					<option></option>
+					<option value="better" {%if observation.c_a_question_4=='better'%}selected{%endif%}>better</option>
+					<option value="poorer" {%if observation.c_a_question_4=='poorer'%}selected{%endif%}>poorer</option>
+					<option value="about the same" {%if observation.c_a_question_4=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_4" value="{{observation.c_a_question_4}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">5.</div>
+		<div class="body_select_middle">Demonstration of interest</div>
+		<div class="body_select_right">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_5">
+					<option></option>
+					<option value="very interested" {%if observation.c_a_question_5=='very interested'%}selected{%endif%}>very interested</option>
+					<option value="disinterested" {%if observation.c_a_question_5=='disinterested'%}selected{%endif%}>disinterested</option>
+					<option value="about the same" {%if observation.c_a_question_5=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_5" value="{{observation.c_a_question_5}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">6.</div>
+		<div class="body_select_middle">Learning difficulty/frustration</div>
+		<div class="body_select_right">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_6">
+					<option></option>
+					<option value="high" {%if observation.c_a_question_6=='high'%}selected{%endif%}>high</option>
+					<option value="low" {%if observation.c_a_question_6=='low'%}selected{%endif%}>low</option>
+					<option value="about the same" {%if observation.c_a_question_6=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_6" value="{{observation.c_a_question_6}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left" style="border-bottom:2px solid black">7.</div>
+		<div class="body_select_middle" style="border-bottom:2px solid black">Emotional/social maturity</div>
+		<div class="body_select_right" style="border-bottom:2px solid black">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_a_question_7">
+					<option></option>
+					<option value="greater than" {%if observation.c_a_question_7=='greater than'%}selected{%endif%}>greater than</option>
+					<option value="less than" {%if observation.c_a_question_7=='less than'%}selected{%endif%}>less than</option>
+					<option value="about the same" {%if observation.c_a_question_7=='about the same'%}selected{%endif%}>about the same</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_a_question_7" value="{{observation.c_a_question_7}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+
+	<div style='text-align: center; margin-top:0.75em; margin-bottom:0.75em; font-size:120%'>
+	<b>B. Instruction Observed for Student: (Check all that apply)</b>
+	</div>
+
+	<div class="body_columns cols" style="border:2px solid black; border-bottom:0; align-items:center; padding-bottom:0.5em">
+				<div style="width:22%; text-align:left; padding-left:0.2em">1. Type of Lesson Observed:</div>
+				<div style="width:78%">
+					<div>
+						<div style="display:flex; justify-content:flex-start">
+							<div class="mini-cols">&ensp;<input type="checkbox" class="change change_check" name="c_b_1_large" {%if observation.c_b_1_large==True%}checked{%endif%} />&thinsp; large group</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_1_small" {%if observation.c_b_1_small==True%}checked{%endif%} />&thinsp; small group</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_1_individual" {%if observation.c_b_1_individual==True%}checked{%endif%} />&thinsp; individual</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_1_visual" {%if observation.c_b_1_visual==True%}checked{%endif%} />&thinsp; visual</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_1_auditory" {%if observation.c_b_1_auditory==True%}checked{%endif%} />&thinsp; auditory</div>
+						</div>
+					</div>
+					<div>
+						<div style="display:flex; justify-content:flex-start; margin-top:0.25em">
+							<div class="mini-cols-3" style="margin-top:0.25em">&ensp;<input type="checkbox" class="change change_check" id="c_b_1_other" name="c_b_1_other" {%if observation.c_b_1_other==True%}checked{%endif%} />&thinsp; other (specify)</div>
+							<div class="mini-cols-2" style="margin-top:0.25em"><input type="text" class="change" id="c_b_1_other_text" name="c_b_1_other_text" {%if observation.c_b_1_other==True and observation.observation_final==False%}style="width:87%; background:beige"{%else%}style="width:87%; background:gainsboro" readonly{%endif%} {%if observation.c_b_1_other_text and observation.c_b_1_other_text.strip()!=""%}value="{{observation.c_b_1_other_text}}"{%endif%}/></div>
+						</div>
+					</div>
+				</div>
+	</div>
+	<div class="body_columns cols" style="border:2px solid black; border-bottom:0; align-items:center; padding-bottom:0.5em">
+				<div style="width:22%; text-align:left; padding-left:0.2em">2. Conceptual content of lesson observed:</div>
+				<div style="width:78%">
+					<div>
+						<div style="display:flex; justify-content:flex-start; padding-top:0.5em; margin-bottom:0.25em">
+							<div class="mini-cols">&ensp;<input type="checkbox" class="change change_check" name="c_b_2_concrete" {%if observation.c_b_2_concrete==True%}checked{%endif%} />&thinsp; concrete</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_2_abstract" {%if observation.c_b_2_abstract==True%}checked{%endif%} />&thinsp; abstract</div>
+						</div>
+					</div>
+				</div>
+	</div>
+	<div class="body_columns cols" style="border:2px solid black; align-items:center; padding-bottom:0.5em">
+				<div style="width:22%; text-align:left; padding-left:0.2em">3. Behavior reinforcement:</div>
+				<div style="width:78%">
+					<div>
+						<div style="display:flex; justify-content:flex-start">
+							<div class="mini-cols">&ensp;<input type="checkbox" class="change change_check" name="c_b_3_positive" {%if observation.c_b_3_positive==True%}checked{%endif%} />&thinsp; positive</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_3_negative" {%if observation.c_b_3_negative==True%}checked{%endif%} />&thinsp; negative</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_3_ignored" {%if observation.c_b_3_ignored==True%}checked{%endif%} />&thinsp; ignored</div>
+							<div class="mini-cols"><input type="checkbox" class="change change_check" name="c_b_3_isolation" {%if observation.c_b_3_isolation==True%}checked{%endif%} />&thinsp; isolation</div>
+						</div>
+					</div>
+					<div>
+						<div style="display:flex; justify-content:flex-start; margin-top:0.25em">
+							<div class="mini-cols-3" style="margin-top:0.25em">&ensp;<input type="checkbox" class="change change_check" id="c_b_3_other" name="c_b_3_other" {%if observation.c_b_3_other==True%}checked{%endif%} />&thinsp; other (specify)</div>
+							<div class="mini-cols-2" style="margin-top:0.25em"><input type="text" class="change" id="c_b_3_other_text" name="c_b_3_other_text" {%if observation.c_b_3_other==True and observation.observation_final==False%}style="width:87%; background:beige"{%else%}style="width:87%; background:gainsboro" readonly{%endif%} {%if observation.c_b_3_other_text and observation.c_b_3_other_text.strip()!=""%}value="{{observation.c_b_3_other_text}}"{%endif%}/></div>
+						</div>
+					</div>
+				</div>
+	</div>
+	<div style='text-align: center; margin-top:0.75em; font-size:120%'>
+	<b>C. Classroom Environment:&thinsp;</b>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">1.</div>
+		<div class="body_select_middle">How much movement/activity is allowed?</div>
+		<div class="body_select_right" style="padding-top:0.65em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_c_question_1">
+					<option></option>
+					<option value="a great deal" {%if observation.c_c_question_1=='a great deal'%}selected{%endif%}>a great deal</option>
+					<option value="some" {%if observation.c_c_question_1=='some'%}selected{%endif%}>some</option>
+					<option value="minimal" {%if observation.c_c_question_1=='minimal'%}selected{%endif%}>minimal</option>
+					<option value="none" {%if observation.c_c_question_1=='none'%}selected{%endif%}>none</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_c_question_1" value="{{observation.c_c_question_1}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">2.</div>
+		<div class="body_select_middle">How much talking/noise is tolerated?</div>
+		<div class="body_select_right" style="padding-top:0.65em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_c_question_2">
+					<option></option>
+					<option value="a great deal" {%if observation.c_c_question_2=='a great deal'%}selected{%endif%}>a great deal</option>
+					<option value="some" {%if observation.c_c_question_2=='some'%}selected{%endif%}>some</option>
+					<option value="minimal" {%if observation.c_c_question_2=='minimal'%}selected{%endif%}>minimal</option>
+					<option value="none" {%if observation.c_c_question_2=='none'%}selected{%endif%}>none</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_c_question_2" value="{{observation.c_c_question_2}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">3.</div>
+		<div class="body_select_middle">What type(s) of feedback were given?</div>
+		<div class="body_select_right" style="padding-top:0.65em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_c_question_3">
+					<option></option>
+					<option value="praise" {%if observation.c_c_question_3=='praise'%}selected{%endif%}>praise</option>
+					<option value="criticism" {%if observation.c_c_question_3=='criticism'%}selected{%endif%}>criticism</option>
+					<option value="corrective" {%if observation.c_c_question_3=='corrective'%}selected{%endif%}>corrective</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_c_question_3" value="{{observation.c_c_question_3}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">4.</div>
+		<div class="body_select_middle">What tone/manner was used to communicate?</div>
+		<div class="body_select_right" style="padding-top:0.65em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_c_question_4">
+					<option></option>
+					<option value="supportive" {%if observation.c_c_question_4=='supportive'%}selected{%endif%}>supportive</option>
+					<option value="matter-of-fact" {%if observation.c_c_question_4=='matter-of-fact'%}selected{%endif%}>matter-of-fact</option>
+					<option value="direct" {%if observation.c_c_question_4=='direct'%}selected{%endif%}>direct</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_c_question_4" value="{{observation.c_c_question_4}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left" style="width:55%; border-right:2px solid black; text-align:left; padding-left:0.7em">5. During this observation, how did the teacher spend most of his/her time?(e.g. at the board, with a small group, circulating among students)
+		</div>
+		<div class="body_select_pad"></div>
+	</div>	
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left" style="width:55%; border-right:2px solid black; border-top:0; text-align:center; padding-top:0.5em; padding-bottom:0.25em">
+			<textarea name="c_c_question_5" class="change" {%if observation.observation_final==False%}style="background:beige; width:97%"{%else%}style="background:gainsboro; width:97%" readonly{%endif%} rows=3>{%if observation.c_c_question_5%}{{observation.c_c_question_5}}{%endif%}</textarea>
+		</div>
+		<div class="body_select_pad"></div>
+	</div>	
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left" style="width:55%; border-right:2px solid black; text-align:left; padding-left:0.7em">6. What, if anything, about the teacher or classroom seemed to have a positive or negative effect on this student in particular?
+		</div>
+		<div class="body_select_pad"></div>
+	</div>	
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left" style="width:55%; border-right:2px solid black; border-top:0; border-bottom:2px solid black; text-align:center; padding-top:0.5em; padding-bottom:0.25em">
+			<textarea name="c_c_question_6" class="change" {%if observation.observation_final==False%}style="background:beige; width:97%"{%else%}style="background:gainsboro; width:97%" readonly{%endif%} rows=3>{%if observation.c_c_question_6%}{{observation.c_c_question_6}}{%endif%}</textarea>
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div style='text-align: center; margin-top:0.75em; font-size:120%'>
+	<b>D. Student Behavior Observed:</b>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">1.</div>
+		<div class="body_select_middle">The student performs with the group.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_1">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_1=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_1=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_1" value="{{observation.c_d_question_1}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>	
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">2.</div>
+		<div class="body_select_middle">The student voluntarily participates in activities.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_2">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_2=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_2=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_2" value="{{observation.c_d_question_2}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">3.</div>
+		<div class="body_select_middle">The student is responsive to the teacher.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_3">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_3=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_3=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_3" value="{{observation.c_d_question_3}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">4.</div>
+		<div class="body_select_middle">The student is responsive to other students.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_4">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_4=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_4=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_4" value="{{observation.c_d_question_4}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">5.</div>
+		<div class="body_select_middle">The student starts and stays on task.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_5">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_5=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_5=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_5" value="{{observation.c_d_question_5}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">6.</div>
+		<div class="body_select_middle">The student finishes what is started.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_6">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_6=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_6=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_6" value="{{observation.c_d_question_6}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">7.</div>
+		<div class="body_select_middle">The student answers when called on.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_7">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_7=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_7=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_7" value="{{observation.c_d_question_7}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">8.</div>
+		<div class="body_select_middle">The student shows independence.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_8">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_8=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_8=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_8" value="{{observation.c_d_question_8}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left">8.</div>
+		<div class="body_select_middle">The student shows independence.</div>
+		<div class="body_select_right" style="padding-top:0.5em">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_8">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_8=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_8=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_8" value="{{observation.c_d_question_8}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>
+	<div class="body_columns cols">
+		<div class="body_select_pad"></div>
+		<div class="body_select_left" style="border-bottom:2px solid black">9.</div>
+		<div class="body_select_middle" style="border-bottom:2px solid black">The student seems alert (not sleepy or lethargic).</div>
+		<div class="body_select_right" style="padding-top:0.5em; border-bottom:2px solid black">
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:95%; background:beige" name="c_d_question_9">
+					<option></option>
+					<option value="yes" {%if observation.c_d_question_9=='yes'%}selected{%endif%}>yes</option>
+					<option value="no" {%if observation.c_d_question_9=='no'%}selected{%endif%}>no</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="c_d_question_9" value="{{observation.c_d_question_9}}" style="width:95%; background:gainsboro"/>
+			{%endif%}
+		</div>
+		<div class="body_select_pad"></div>
+	</div>	
+	<div style='text-align: center; margin-top:0.75em; font-size:120%'>
+	<b>E. Student Strengths:</b>
+	</div>
+	<div style='text-align: center; font-size:110%'>
+	What strengths were obsserved in this student that could be drawn upon in designing interventions?
+	</div>
+	<div class="columns" style="margin-top:0.5em; text-align:center">
+		<textarea name="c_student_strength" class="change" {%if observation.observation_final==False%}style="background:beige; width:100%"{%else%}style="background:gainsboro; width:100%" readonly{%endif%} rows=4>{%if observation.c_student_strength%}{{observation.c_student_strength}}{%endif%}</textarea>
+	</div>
+	
+	
+	<div style='text-align: center; margin-top:0.75em; font-size:120%'>
+	<b>F. Summary:</b>
+	</div>
+	<div style='text-align: center; font-size:110%'>
+	Please provide a brief summary of the student's learning/behavior that was observed.
+	</div>
+	<div class="columns" style="margin-top:0.5em; text-align:center">
+		<textarea name="c_summary" class="change" {%if observation.observation_final==False%}style="background:beige; width:100%"{%else%}style="background:gainsboro; width:100%" readonly{%endif%} rows=4>{%if observation.c_summary%}{{observation.c_summary}}{%endif%}</textarea>
+	</div>
+</div>
+
+
+
+
+</div>
+
+<div style="margin-top:0.5em">&emsp;
+<input id="observation_final" type="hidden" name="observation_final" value='N'/>
+<input id="change_tracker" type="hidden" value=0 /> 
+<input id="observation_type" type="hidden" value="{{observation.observation_type}}" />
+</div>
+</form>
+
+<script>
+$('.change').on('change', function(){
+		$('#change_tracker').val(1);
+	
+			
+})
+
+$(function(){
+	$('.navbar').css("display", "none");
+	{%if observation.observation_final==False%}
+	$('#c_b_1_other').on('click', function(){
+			if($(this).prop('checked')==true){
+				$('#c_b_1_other_text').prop('readonly', false);$('#c_b_1_other_text').css('background', 'beige');}
+			else{$('#c_b_1_other_text').prop('readonly', true);$('#c_b_1_other_text').css('background', 'gainsboro');
+				$('#c_b_1_other_text').val('');}
+		})
+	$('#c_b_3_other').on('click', function(){
+			if($(this).prop('checked')==true){
+				$('#c_b_3_other_text').prop('readonly', false);$('#c_b_3_other_text').css('background', 'beige');}
+			else{$('#c_b_3_other_text').prop('readonly', true);$('#c_b_3_other_text').css('background', 'gainsboro');
+			$('#c_b_3_other_text').val('');}
+		})
+	
+	{%endif%}
+	{%if observation.observation_final==True%}
+		$('.change').prop("readonly", true);
+		$('.change').css("background-color", "gainsboro");
+		$('select').attr('disabled', true);
+		$('.change_check').click(function(){return false;})
+	{%endif%}
+	
+})
+</script>
+{% endblock %}

@@ -1,0 +1,7 @@
+,id,student_id,student_name,grade,status,school,rti_vision,rti_vision_date
+0,1,006982,"Aaron, Henry",9,Active,Bartram Trail,Pass,2018-11-22
+1,2,009039,"Adams, Chang",9,Active,Creekside,Pass,2019-04-08
+2,7,007235,"Little, Tabitha",10,Referred,Creekside,Fail,2019-02-05
+3,12,001798,"Bellwoar, Nate",11,Active,Creekside,,
+4,14,100110,"Reed, Landis",12,Active,Bartram Trail,,
+5,15,100125,"Rousseau, Livia",12,Watch,Creekside,,

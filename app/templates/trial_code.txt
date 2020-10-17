@@ -1,0 +1,45 @@
+<p style="font-size:150%; margin-left:1em;" class="checks" onChange="myfunction()">School:<br>
+  <span style="margin-left:1em"><input type="checkbox" name="school" value="Bartram Trail">&ensp;Bartram Trail</span>
+  <span style="margin-left:1em"><input type="checkbox" name="school" value="Creekside">&ensp;Creekside</span>
+  <span style="margin-left:1em"><input type="checkbox" name="school" value="Nease">&ensp;Nease</span>
+  <span style="margin-left:1em"><input type="checkbox" name="school" value="Patriot Oaks">&ensp;Patriot Oaks</span>
+  <span style="margin-left:1em"><input type="checkbox" name="school" value="Pacetti Bay">&ensp;Pacetti Bay</span>
+  <span style="margin-left:1em"><input type="checkbox" name="school" value="Ketterlinus">&ensp;Ketterlinus</span></p>
+
+<p id="demo"></p>
+<script>
+function myfunction(){
+var grades=[];
+var typeOfSchool=[];
+var dict={"Bartram Trail" : 3, "Creekside" : 3 , "Nease" : 3 , "Patriot Oaks" : 4, "Pacetti Bay" : 2, "Ketterlinus": 1};
+var x = document.getElementByName("school");
+for (var i =0; i<x.length; i++){ if(x[i].checked==true){
+				if (typeOfSchool.indexOf(dict[x[i]])== -1){typeOfSchool.push(dict[x[i].value])}}}
+
+typeOfSchool.sort(function(a,b){return a-b})
+if (typeOfSchool.indexOf(4)>-1){ if (typeOfSchool.indexOf(3)>-1){typeOfSchool=[1,2,3]}
+					else{typeOfSchool=[1,2]}}
+
+for (var i =0; i< typeOfSchool.length ; i++){if (typeOfSchool[i]==1){grades.push([0,1,2,3,4,5])}
+					     if (typeOfSchool[i]==2){grades.push([6,7,8])}
+					     if (typeOfSchool[i]==3){grades.push([9,10,11,12])}}
+var str="";
+if (grades.length>0){str+= grades[0];}
+for (var i =1; i< grades.length ; i++){str+= ", "+ grades[i];}
+document.getElementByID('demo').innerHTML=str
+</script>
+	
+	
+
+
+			
+
+ <div class="button-group" style="display-inline float: center">
+        <button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
+       <span style ="width:125px; font-size:150%">Grades:</span>
+       <span class="caret"></span></button>
+       <ul class="dropdown-menu">
+<span style="font-size:150%" id="final"><li><a class="large" data-value="0" tabIndex="-1"><input type="checkbox" name="grade" value="0"/>&nbsp;K</a></li>
+</span>
+</ul>
+  </div>

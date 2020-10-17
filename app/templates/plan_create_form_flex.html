@@ -1,0 +1,143 @@
+{%extends "base2.html" %}
+
+{%block content%}
+
+
+<div class="container" style="background-color: rgba(80,200,120,1); width:95%; max-width:1230px; min-width:980px">
+	<div class="columns" style="display:flex; justify-content:space-evenly; text-align:center">	
+		<div class="cols" style="text-align:center">
+			<h3 style="color:white">Create New Intervention Plan</h3>
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; padding-top:0.75em; align-items:center">
+		<div class="cols" style="text-align:right; width:50%; font-size:150%; color:white; padding-right:0.5em">
+			<b>Student Name</b>
+		</div>
+		<div class="cols" style="padding-left:0.5em; width:50%">
+			<input type="text" readonly style="background-color:gainsboro; width:52%; font-size:130%; height:30px;" value="{{student.student_name}}">
+		</div>
+	</div>
+	<form id="plan_create" action="" method="post">
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1em; align-items:center">
+			<div class="cols" style="text-align:right; width:50%; font-size:150%; color:white; padding-right:0.5em">
+				<b>Originating School</b>
+			</div>
+			<div class="cols" style="padding-left:0.5em; width:50%">
+				<input type="text" style="width:52%; font-size:130%; height:30px; background-color:gainsboro" name="school" value="{{student.school}}" readonly>
+			</div>
+		</div>
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1em; align-items:center">
+			<div class="cols" style="text-align:right; width:50%; font-size:150%; color:white; padding-right:0.5em">
+				<b>Lead Interventionist</b>
+			</div>
+			<div class="cols" style="padding-left:0.5em; width:50%">
+				<input type="text" id="teacher" name="teacher" style="width:52%; font-size:130%; height:30px; background-color:beige" value="{{student.teacher}}" required>
+				&nbsp;<span style="color:black; font-size:175%">*</span>
+			</div>
+		</div>
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1em; align-items:center">
+			<div class="cols" style="text-align:right; width:50%; font-size:150%; color:white; padding-right:0.5em">
+				<b>Level of Intervention</b>
+			</div>
+			<div class="cols" style="padding-left:0.5em; width:50%">
+				<select id="intervention_level" name="intervention_level" style="width:52%; font-size:130%; height:30px; background-color:beige">
+					<option disabled selected>--Select Tier</option>
+					<option id="2" value=2>Tier 2</option>
+					{% if student.tiers==3 %}<option id="3" value=3>Tier 3</option>{%endif%}
+				</select>
+				&nbsp;<span style="color:black; font-size:175%">*</span>
+			</div>
+		</div>
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1em; align-items:center">
+			<div class="cols" style="text-align:right; width:50%; font-size:150%; color:white; padding-right:0.5em">
+				<b>Plan Date</b>
+			</div>
+			<div class="cols" style="padding-left:0.5em; width:50%">
+				<input type="date" id="plan_date" style="font-size: 130%; width:52%; height:30px; background-color:beige" name="plan_date" required>
+				&nbsp;<span style="color:black; font-size:175%">*</span>
+			</div>
+		</div>
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1em; align-items:center">
+			<div class="cols" style="text-align:right; width:50%; font-size:150%; color:white; padding-right:0.5em">
+				<b>Area of Intervention</b>
+			</div>
+			<div class="cols" style="padding-left:0.5em; width:50%">
+				<select style="font-size:130%; width:52%; height:30px; background-color:beige" id="intervention_area" name="intervention_area">
+					<option disabled selected>--Select Intervention Area</option>
+					<option {%if area=="Behavior - Excessive fears/phobias and/or worrying"%}selected {%endif%} value="Behavior - Excessive fears/phobias and/or worrying">Behavior - Excessive fears/phobias and/or worrying</option>
+					<option {%if area=="Behavior - Feelings of sadness"%}selected {%endif%} value="Behavior - Feelings of sadness">Behavior - Feelings of sadness</option>
+					<option {%if area=="Behavior - Lack of interest in friends and/or school"%}selected {%endif%} value="Behavior - Lack of interest in friends and/or school">Behavior - Lack of interest in friends and/or school</option>
+					<option {%if area=="Behavior - Non-compliance"%}selected {%endif%} value="Behavior - Non-compliance">Behavior - Non-compliance</option>
+					<option {%if area=="Behavior - Physical Aggression"%}selected {%endif%} value="Behavior - Physical Aggression">Behavior - Physical Aggression</option>
+					<option {%if area=="Behavior - Poor social skills"%}selected {%endif%} value="Behavior - Poor social skills">Behavior - Poor social skills</option>
+					<option {%if area=="Behavior - Verbal Aggression"%}selected {%endif%} value="Behavior - Verbal Aggression">Behavior - Verbal Aggression</option>
+					<option {%if area=="Behavior - Withdrawal"%}selected {%endif%} value="Behavior - Withdrawal">Behavior - Withdrawal</option>
+					<option {%if area=="Language - Phonological Processing"%}selected {%endif%} value="Language - Phonological Processing">Language - Phonological Processing</option>
+					<option {%if area=="Language - Social Interaction"%}selected {%endif%} value="Language - Social Interaction">Language - Social Interaction</option>
+					<option {%if area=="Mathematics Calculation"%}selected {%endif%} value="Mathematics Calculation">Mathematics Calculation</option>
+					<option {%if area=="Mathematics Problem Solving"%}selected {%endif%} value="Mathematics Problem Solving">Mathematics Problem Solving</option>
+					<option {%if area=="Reading - Basic Reading Skills"%}selected {%endif%} value="Reading - Basic Reading Skills">Reading - Basic Reading Skills</option>
+					<option {%if area=="Reading - Reading Fluency Skills"%}selected {%endif%} value="Reading - Reading Fluency Skills">Reading - Reading Fluency Skills</option>
+					<option {%if area=="Listening Comprehension"%}selected {%endif%} value="Listening Comprehension">Listening Comprehension</option>
+					<option {%if area=="Oral Expression"%}selected {%endif%} value="Oral Expression">Oral Expression</option>
+					<option {%if area=="Reading Comprehension"%}selected {%endif%} value="Reading Comprehension">Reading Comprehension</option>
+					<option {%if area=="Written Expression"%}selected {%endif%} value="Written Expression">Written Expression</option>
+				</select>
+				&nbsp;<span style="color:black; font-size:175%;">*</span>
+			</div>
+		</div>
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1.25em">
+			<div class="cols" style="width:48%; text-align: right">
+				<button class="btn btn-lg btn-info" id="plan_submit">Submit</button>
+			</div>
+			<div class="cols" style="width:4%"></div>
+			<div class="cols" style="width:48%; padding-left:0.5em">
+				<button id ="close" class="btn btn-lg btn-secondary" style="width:50%">Return to Student's RtI page</button>
+			</div>
+		</div>
+		<div class="columns" style="display:flex; justify-content:center; padding-top:0.75em">
+			<p style="font-size:150%"><span style="color:black; font-size:117%">*</span> &nbsp;indicates required field</p>
+		</div>
+	</form>
+</div>
+
+{%if plan_id%}
+<input type="hidden" form="plan_create" name="plan_used" value=1 />
+<input type="hidden" form="plan_create" name="plan_id" value={{plan_id}} />
+{%else%}
+<input type="hidden" form="plan_create" name="plan_used" value=0 />
+{%endif%}
+
+
+
+<script>
+$('#close').on('click', function(event){
+		event.preventDefault();
+		window.location.href="{{url_for('student_page', student_id=student.student_id)}}";
+})
+
+$('#plan_submit').on('click', function(){
+	event.preventDefault();
+	var form_check=true;
+	if (!$('#teacher').val() || $('#teacher').val().trim()==""){
+		form_check=false
+	}
+	if (!$('#intervention_level').val() || $('#intervention_level').val().trim()==""){
+		form_check=false
+	}
+	if (!$('#plan_date').val() || $('#plan_date').val().trim()==""){
+		form_check=false
+	}
+	if (!$('#intervention_area').val() || $('#intervention_area').val().trim()==""){
+		form_check=false
+	}
+	if (!form_check){
+		alert('Must fill in all required fields before submitting!');
+		return;
+	}
+	else{document.getElementById('plan_create').submit();}
+})
+
+</script>
+
+{% endblock %}

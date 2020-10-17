@@ -1,0 +1,7 @@
+*__pycache__*
+app.db
+/rti_local
+/search.db
+gt_cached.json
+.env
+.flaskenv

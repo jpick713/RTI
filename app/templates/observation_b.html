@@ -1,0 +1,494 @@
+{%extends "base2.html" %}
+
+{%block content%}
+ 
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.structure.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css">
+<script src="/static/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<script src="/static/jasonday-printThis-0aa7434/printThis.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+<div id="observation_print">
+<style>
+.columns{display : flex;
+		justify-content:flex-start}
+
+.text_columns{display : flex;
+		justify-content:flex-start;}
+
+.cols-top{display : flex;
+		justify-content:flex-start;
+		margin-top:0.75em}
+.behavior_columns{display:flex;
+		justify-content:flex-start; 
+		
+		width:100%}
+
+.cols{font-size : 110%}
+
+.top-1{text-align : right;
+	width : 20%}
+
+.top-2{width : 40%;
+	text-align:left}
+
+.top-3{width : 20%;
+	text-align:right}
+
+.top-4{width : 20%}
+
+.body-1{width:30%;
+	text-align:right}
+
+.body-2{width:30%;
+	text-align:left}
+
+.question_left_1{text-align:right;
+	       padding-right:0.25em;
+	       border: 2px solid black;
+		border-bottom:0;
+		width:30%;
+		margin-right:0em}
+
+.question_left_2{text-align:center;
+		padding-left:0.25em;
+		width:20%;
+		border: 2px solid black;
+		border-bottom:0;
+		border-left:0;
+		margin-left:0em}
+
+.question_right_1{text-align:right;
+		padding-left:0.25em;
+		width:30%;
+		border: 2px solid black;
+		border-bottom:0;
+		border-left:0;
+		margin-left:0em}
+
+.question_right_2{text-align:center;
+		padding-left:0.25em;
+		width:20%;
+		border: 2px solid black;
+		border-bottom:0;
+		border-left:0;
+		margin-left:0em}
+
+.text_left{text-align:right;
+	       border: 2px solid black;
+		border-bottom:0;
+		padding-top:0.25em;
+		padding-bottom:0.25em;
+		border-right:0;
+		width:20%;
+		margin-right:0em}
+.text_right{border: 2px solid black;
+		border-bottom:0;
+		border-left:0;
+		padding-top:0.25em;
+		padding-bottom:0.25em;
+		width:79%;}
+
+.text_center{border-top: 2px solid black;
+		padding-top:0.25em;
+		padding-bottom:0.25em;
+		width:1%;}
+</style>
+<div style='text-align: center; margin-top:0.5em'><h4>ST. JOHNS COUNTY SCHOOL DISTRICT</h4><h4>Intervention Services, 40 Orange Street,</h4><h4>St. Augustine, FL 32084</h4><h4><b><u>Classroom Observation Checklist</b></u></h4>
+</div>
+{%set name=student.student_name.split(',')%}
+<form id= "observation_form">
+<div class="container" style="width:98%; max-width:1500px; min-width:1000px; margin-top:0.5em">
+		<div class="columns">
+			<div class="cols top-1">Student's Name:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text" value="{{name[1].strip()}} {{name[0]}}" readonly style="width:100%; background:gainsboro"/></div>
+			<div class="cols top-3">Date of Birth:&ensp;</div>
+			<div class="cols top-4"><input type="text" class="top-text" value="{{student.date_birth}}" readonly style="width:100%; background:gainsboro"/></div>
+		</div>
+		<div class="columns cols-top">
+			<div class="cols top-1">School:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text" value="{{student.school}}" readonly style="width:100%; background:gainsboro"/></div>
+			<div class="cols top-3">Grade:&ensp;</div>
+			<div class="cols top-4"><input type="text" class="top-text" value="{%if student.grade==0%}K{%else%}{{student.grade}}{%endif%}" readonly style="width:100%; background:gainsboro"/></div>
+		</div>
+		<div class="columns cols-top">
+			<div class="cols top-1">Teacher:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text change" name="observation_teacher" {%if observation.observation_teacher%}value="{{observation.observation_teacher}}"{%endif%} style="width:100%; background:beige"/></div>
+			<div class="cols top-3">Observation Date:&ensp;</div>
+			<div class="cols top-4"><input type="date" class="top-text change" name="observation_date" {%if observation.observation_date%}value="{{observation.observation_date}}"{%endif%}" style="width:100%; background:beige"/></div>
+		</div>
+		<div class="columns cols-top">
+			<div class="cols top-1">Activity Observed:&ensp;</div>
+			<div class="cols top-2"><input type="text" class="top-text change" name="b_observe_activity" {%if observation.b_observe_activity%}value="{{observation.b_observe_activity}}"{%endif%} style="width:100%; background:beige"/></div>
+			<div class="cols top-3">Length of Time:&ensp;</div>
+			<div class="cols top-4">
+				{%if observation.observation_final==False%}
+					<select class="change" name="b_length_of_time" style="width:100%; background:beige">
+						<option></option>
+						<option value="5" {%if observation.b_length_of_time==5%}selected{%endif%}>5 minutes</option>
+						<option value="10" {%if observation.b_length_of_time==10%}selected{%endif%}>10 minutes</option>
+						<option value="15" {%if observation.b_length_of_time==15%}selected{%endif%}>15 minutes</option>
+						<option value="20" {%if observation.b_length_of_time==20%}selected{%endif%}>20 minutes</option>
+						<option value="25" {%if observation.b_length_of_time==25%}selected{%endif%}>25 minutes</option>
+						<option value="30" {%if observation.b_length_of_time==30%}selected{%endif%}>30 minutes</option>
+						<option value="35" {%if observation.b_length_of_time==35%}selected{%endif%}>35 minutes</option>
+						<option value="40" {%if observation.b_length_of_time==40%}selected{%endif%}>40 minutes</option>
+						<option value="45" {%if observation.b_length_of_time==45%}selected{%endif%}>45 minutes</option>
+						<option value="50" {%if observation.b_length_of_time==50%}selected{%endif%}>50 minutes</option>
+						<option value="55" {%if observation.b_length_of_time==55%}selected{%endif%}>55 minutes</option>
+						<option value="60" {%if observation.b_length_of_time==60%}selected{%endif%}>60 minutes</option>
+					</select>
+				{%else%}<input type="text" class="top-text change" name="b_length_of_time" value="{{observation.b_length_of_time}} minutes" style="width:100%; background:gainsboro"/>
+				{%endif%}
+			</div>
+		</div>
+		<div class="columns cols-top">
+			<div class="cols top-1">Learning Situation:&ensp;</div>
+			<div class="cols top-2">
+				{%if observation.observation_final==False%}
+					<select class="change" name="b_learning_situation" style="width:100%; background:beige">
+						<option></option>
+						<option value="Whole Group" {%if observation.b_learning_situation=='Whole Group'%}selected{%endif%}>Whole Group</option>
+						<option value="Small Group" {%if observation.b_learning_situation=='Small Group'%}selected{%endif%}>Small Group</option>
+						<option value="One to One" {%if observation.b_learning_situation=='One to One'%}selected{%endif%}>One to One</option>
+						<option value="Independent" {%if observation.b_learning_situation=='Independent'%}selected{%endif%}>Independent</option>
+					</select>
+				{%else%}<input type="text" class="top-text change" name="b_learning_situation" value="{{observation.b_learning_situation}}" style="width:100%; background:gainsboro"/>
+				{%endif%}
+			</div>
+			<div class="cols top-3">Observer Name:&ensp;</div>
+			<div class="cols top-4"><input type="text" class="top-text change" name="observer_name" {%if observation.observer_name%}value="{{observation.observer_name}}"{%endif%}" style="width:100%; background:beige"/></div>
+		
+		</div>
+		<div class="text_col" style="text-align:center; font-size:115%; margin-top:0.5em">
+			When observing this student, please consider the functioning of classmates as a guide for ratings. Add any comments that will clarify your ratings, as needed in the comment box at the bottom of observation.
+		</div>
+</div>		
+
+<div style='text-align: center; margin-top:0.5em; font-size:120%'>
+	<b>Behavioral Performance</b>
+</div>
+
+<div class="container" style="width:98%; max-width:1500px; min-width:1000px; margin-top:0.5em; margin:auto">
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Is organized&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_1">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_1=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_1=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_1=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_1=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_1" value="{{observation.b_behavior_question_1}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Avoids activities&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_7">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_7=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_7=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_7=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_7=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_7" value="{{observation.b_behavior_question_7}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Is disruptive&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_2">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_2=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_2=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_2=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_2=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_2" value="{{observation.b_behavior_question_1}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Pays attention to tasks&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_8">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_8=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_8=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_8=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_8=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_8" value="{{observation.b_behavior_question_8}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Is cooperative&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_3">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_3=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_3=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_3=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_3=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_3" value="{{observation.b_behavior_question_3}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Shows ability to complete tasks&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_9">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_9=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_9=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_9=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_9=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_9" value="{{observation.b_behavior_question_9}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Is enthusiastic&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_4">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_4=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_4=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_4=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_4=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_4" value="{{observation.b_behavior_question_4}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Seeks attention&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_10">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_10=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_10=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_10=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_10=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_10" value="{{observation.b_behavior_question_10}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Is impulsive&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_5">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_5=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_5=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_5=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_5=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_5" value="{{observation.b_behavior_question_5}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Is distracted&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_11">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_11=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_11=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_11=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_11=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_11" value="{{observation.b_behavior_question_11}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1" style="border-bottom:2px solid black">Interacts with peers&thinsp;</div>
+			<div class="cols question_left_2" style="border-bottom:2px solid black">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_6">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_6=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_6=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_6=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_6=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_6" value="{{observation.b_behavior_question_6}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1" style="border-bottom:2px solid black">Perseverates (repeats behavior)&thinsp;</div>
+			<div class="cols question_right_2" style="border-bottom:2px solid black">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_behavior_question_12">
+					<option></option>
+					<option value="Often" {%if observation.b_behavior_question_12=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_behavior_question_12=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_behavior_question_12=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_behavior_question_12=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_behavior_question_12" value="{{observation.b_behavior_question_12}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+</div>
+
+<div style='text-align: center; margin-top:0.5em; font-size:120%'>
+	<b>Academic Performance</b>
+</div>
+
+<div class="container" style="width:98%; max-width:1500px; min-width:1000px; margin-top:0.5em; margin:auto">
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Appears to understand what is said&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_academic_question_1">
+					<option></option>
+					<option value="Often" {%if observation.b_academic_question_1=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_academic_question_1=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_academic_question_1=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_academic_question_1=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_academic_question_1" value="{{observation.b_academic_question_1}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Appears to express ideas adequately&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_academic_question_2">
+					<option></option>
+					<option value="Often" {%if observation.b_academic_question_2=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_academic_question_2=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_academic_question_2=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_academic_question_2=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_academic_question_2" value="{{observation.b_academic_question_2}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1">Is able to follow oral directions&thinsp;</div>
+			<div class="cols question_left_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_academic_question_3">
+					<option></option>
+					<option value="Often" {%if observation.b_academic_question_3=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_academic_question_3=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_academic_question_3=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_academic_question_3=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_academic_question_3" value="{{observation.b_academic_question_3}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1">Completes assignments in designated time&thinsp;</div>
+			<div class="cols question_right_2">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_academic_question_4">
+					<option></option>
+					<option value="Often" {%if observation.b_academic_question_4=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_academic_question_4=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_academic_question_4=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_academic_question_4=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_academic_question_4" value="{{observation.b_academic_question_4}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+	<div class="behavior_columns">
+			<div class="cols question_left_1" style="border-bottom:2px solid black">Contributes to class discussion&thinsp;</div>
+			<div class="cols question_left_2" style="border-bottom:2px solid black">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_academic_question_5">
+					<option></option>
+					<option value="Often" {%if observation.b_academic_question_5=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_academic_question_5=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_academic_question_5=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_academic_question_5=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_academic_question_5" value="{{observation.b_academic_question_5}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+			<div class="cols question_right_1" style="border-bottom:2px solid black">Appears to have adequate recall&thinsp;</div>
+			<div class="cols question_right_2" style="border-bottom:2px solid black">&thinsp;
+			{%if observation.observation_final==False%}
+				<select class="change" style="width:80%; background:beige" name="b_academic_question_6">
+					<option></option>
+					<option value="Often" {%if observation.b_academic_question_6=='Often'%}selected{%endif%}>Often</option>
+					<option value="Sometimes" {%if observation.b_academic_question_6=='Sometimes'%}selected{%endif%}>Sometimes</option>
+					<option value="Never" {%if observation.b_academic_question_6=='Never'%}selected{%endif%}>Never</option>
+					<option value="Not Observed" {%if observation.b_academic_question_6=='Not Observed'%}selected{%endif%}>Not Observed</option>
+				</select>
+			{%else%}<input type="text" class="top-text change" name="b_academic_question_6" value="{{observation.b_academic_question_6}}" style="width:80%; background:gainsboro"/>
+			{%endif%}
+			</div>
+	</div>
+</div>
+
+<div class="container" style="width:98%; max-width:1500px; min-width:1000px; margin-top:0.5em;">
+	<div class="text_columns">
+		<div class="text_left">
+			Describe the student's behavior regarding engagement in learning and on task behavior.&thinsp;
+		</div>
+		<div class="text_center"></div>
+		<div class="text_right">
+				<textarea  class="change" name="b_text_1" {%if observation.observation_final==False%}style="background:beige; width:98.25%"{%else%}style="background:gainsboro; width:98.25%" readonly{%endif%} rows=3>{%if observation.b_text_1%}{{observation.b_text_1}}{%endif%}</textarea>
+		</div>
+	</div>
+	<div class="text_columns">
+		<div class="text_left" style="border-bottom:2px solid black">
+			Note any learning or behavior problems or frustration that the child exhibited during the lesson.&thinsp;
+		</div>
+		<div class="text_center" style="border-bottom:2px solid black"></div>
+		<div class="text_right" style="border-bottom:2px solid black">
+				<textarea  class="change" name="b_text_2" {%if observation.observation_final==False%}style="background:beige; width:98.25%"{%else%}style="background:gainsboro; width:98.25%" readonly{%endif%} rows=4>{%if observation.b_text_2%}{{observation.b_text_2}}{%endif%}</textarea>
+		</div>
+	</div>
+	<div class="columns cols-top">
+			<div class="cols top-1">Observer's Signature:</div>
+			<div class="cols top-2"><b>&ensp;____________________________________________</b></div>
+			<div class="cols top-3">Date:</div>
+			<div class="cols top-4"><b>&ensp;_____________________</b></div>
+	
+</div>
+
+
+	
+
+
+
+</div>
+
+<div style="margin-top:0.5em">&emsp;
+<input id="observation_final" type="hidden" name="observation_final" value='N'/>
+<input id="change_tracker" type="hidden" value=0 /> 
+<input id="observation_type" type="hidden" value="{{observation.observation_type}}" />
+</div>
+</form>
+
+<script>
+$('.change').on('change', function(){
+		$('#change_tracker').val(1);
+	
+			
+})
+
+$(function(){
+	$('.navbar').css("display", "none");
+	{%if observation.observation_final==True%}
+		$('.change').prop("readonly", true);
+		$('.change').css("background-color", "gainsboro");
+		$('select').attr('disabled', true);
+	{%endif%}
+	
+})
+</script>
+{% endblock %}

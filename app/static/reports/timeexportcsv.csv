@@ -1,0 +1,14 @@
+,id,date_create,date_modify,person_create,person_modify,student_link,teacher,fid,rev,intervention_area,intervention_level,plan_date,school_develop,targeted_skill,current_level,expectation,strategies,days_per_week,minutes_per_session,students_in_group,person_responsible,progress_monitoring_tool,frequency,who_support_plan,what_they_do,when_it_occurs,anticipated_review_date,anticipated_fidelity_assessment,graph_share,fid_complete,rev_complete,rev_completed,fid_completed,active,plan_final,plan_revise,test_type,score_type,monitor_begin,monitor_test_frequency,number_of_tests_given,deleted_plan
+0,19,2020-02-14,2020-02-14,Kelly,Kelly,12,Jamie,False,False,Basic Reading,2,2019-01-22,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+1,17,2020-02-14,2020-02-14,Kelly,Kelly,14,Tim,False,False,Reading Comprehension,2,2019-10-11,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+2,15,2020-02-14,2020-02-14,Kelly,Kelly,13,Matt,False,False,Basic Reading,2,2020-01-10,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+3,20,2020-02-14,2020-02-14,Kelly,Kelly,12,Jamie,False,False,Math Calculation,3,2020-01-14,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+4,12,2020-02-11,2020-02-17,Kelly,Kelly,7,Rue,False,False,Basic Reading,3,2020-01-15,--Pick a School,,None,None,None,4.0,None,None,,,,,,,,,,False,False,,,True,False,False,,,,,,False
+5,21,2020-02-14,2020-02-14,Kelly,Kelly,15,Jamie,False,False,Reading Comprehension,2,2020-01-16,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+6,22,2020-02-14,2020-02-14,Kelly,Kelly,15,Jamie,False,False,Math-Problem Solving,3,2020-01-17,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+7,13,2020-02-11,2020-02-11,Kelly,Kelly,7,Rue,False,False,Written Expression,3,2020-02-07,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False
+8,18,2020-02-14,2020-04-13,Kelly,Katie,14,Tim,False,False,Math-Problem Solving,2,2020-02-11,--Pick a School,,None,None,None,3.0,,,,,,,,,,,,False,False,,,True,False,False,,,,,,False
+9,5,2020-01-14,2020-04-14,Matt,Kelly,1,Matt,False,False,Math-Problem Solving,2,2020-02-17,Bartram Trail,,9th grade level up,10th grade by may,Need to intervene,4.0,20,5,Paraprofessional/Classroom Teacher,Observations,Monthly,ILC and Grade Level Team,Problem Solving and Support,As needed in the Classroom,2020-03-24,2020-04-08,2020-03-07,False,True,2020-01-18,2020-04-10,True,True,False,Math Computation Exams,Percent,,,,False
+10,23,2020-03-01,2020-04-12,Kelly,Katie,1,Matt,False,False,Math Calculation,3,2020-03-01,--Pick a School,,None,None,None,4.0,25,5,,,,,,,,,,False,False,,,True,False,False,,,,,,False
+11,6,2020-02-11,2020-02-11,Kelly,Kelly,2,Jamie,False,False,Reading Comprehension,2,2020-03-05,Creekside,,Reading at 7th Grade level,None,None,4.0,None,None,Paraprofessional/Classroom Teacher,,,,,,,,,False,False,,,True,False,False,Reading Comprehension Assessments,Percent,,,,False
+12,24,2020-04-11,2020-04-11,Katie,Katie,2,Jamie,False,False,Language,2,2020-04-02,,,,,,,,,,,,,,,,,,,,,,True,False,False,,,,,,False

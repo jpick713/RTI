@@ -1,0 +1,823 @@
+{%extends "base2.html" %}
+
+{%block content%}
+
+<link
+    href="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.2.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.0.2.min.css"
+    rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.2.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.0.2.min.js" crossorigin="anonymous"></script>
+
+<link href="/static/css/dygraph.css"
+    rel="stylesheet" type="text/css">
+<script src="/static/scripts/dygraph.js"></script>
+<link href="/static/css/Chart.css"
+    rel="stylesheet" type="text/css">
+<script src="/static/scripts/Chart.bundle.min.js"></script>
+
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.structure.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css">
+<script src="/static/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">  
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.21/sorting/any-number.js"></script>
+
+
+<style>
+	.container {font-size:16px}
+</style>
+
+
+<div class="container" style="width:95%; max-width:1600px; min-width:1400px; padding-top:0.5em; margin-top:1em; background-color: #50C878; margin-left:auto; margin-right:auto">
+	<div class="columns" style="display:flex; padding-bottom:1en; justify-content:flex-start; text-align:center; align-items:center">
+		<div class = "cols" style="width:15%; text-align:center">
+			<button id="close_button" class="btn btn-lg btn-secondary" style="font-size:1em">Back to Student Search</button>
+		</div>
+		<div class="cols" style="width:70%">
+			<h1 style="font-size:2em; color:white">Reporting for Plans</h1>
+		</div>
+		<div class="cols" style="width:15%"></div>
+	</div>
+	<form id="report_form" action="{{url_for('reports')}}" method="Post">
+		{% if user.access_level>=2 %}
+		<div class="columns" style="display:flex; margin-top:1em; justify-content:flex-start; text-align:center; align-items:center">
+			<div class="cols" style="width:30%; text-align:right; color:white; font-size:1.25em">
+				Schools (required):&nbsp;
+			</div>
+			<div class="cols" style="width:18%">
+				{%if user.access_level==3%}
+				<select class="mult" style="width:100%" name="school" multiple id="school_list">
+					{%for school in all_schools%}
+					<option class="school" value="{{school.school_name}}">&ensp;{{school.school_name}}</option>
+					{%endfor%}
+				</select>
+				{%else%}
+				<select class="mult" name="school" multiple id="school_list">
+					<option class="school" value="{{user.school}}">&ensp;{{user.school}}</option>
+					{% if user.secondary %}
+					<option class="school" value="{{user.secondary}}">&ensp;{{user.secondary}}</option>
+					{% endif %}
+					{% if user.third %}
+					<option class="school" value="{{user.third}}">&ensp;{{user.third}}</option>
+					{% endif %}
+					{% if user.fourth %}
+					<option class="school" value="{{user.fourth}}">&ensp;{{user.fourth}}</option>
+					{% endif %}
+					</select>
+				{%endif%}
+			</div>
+			<div class= "cols" style="width:4%"></div>
+			<div class="cols" style="width:18%">
+				<select class="mult1" id="grade_mult" name="grade" style="width:100%; font-size:120%" multiple></select>
+			</div>
+			<div class="cols" style="width:30%"></div>
+		</div>
+		{%else%}
+		<div class="columns" style="display:flex; margin-top:1em; justify-content:flex-start; text-align:center; align-items:center">
+			<div class="cols" style="width:48%; text-align:right; color:white; font-size:1.25em">
+				School:&ensp;{{user.school}}
+			</div>
+			<div class="cols" style="width:4%"></div>
+			<div class="cols" style="width:18%">
+				<select class="mult1" id="grade_mult" name="grade" style="width:100%; font-size:120%" multiple></select>
+			</div>
+			<div class="cols" style="width:30%"></div>
+		</div>
+		{% endif %}
+		
+		<div class="columns" style="display:flex; justify-content:flex-start;  padding-top:1.25em; align-items:center">
+			<div class="cols" style="width:9%; text-align:right; color:white; font-size:1.1em">
+				Race:&nbsp;
+			</div>
+			<div class="cols" style="width:6%;">
+				<select name="race" style="width:100%">
+					<option></option>
+					<option value="Asian">Asian</option>
+					<option value="Black">Black</option>
+					<option value="Hispanic">Hispanic</option>
+					<option value="White">White</option>
+				</select>
+			</div>
+			<div class="cols" style="width:8%; text-align:right; color:white; font-size:1.1em">
+				Gender:&ensp;
+			</div>
+			<div class="cols" style="width:6%">
+				<select name="gender" style = "width:100%">
+					<option></option>
+					<option value="Male">Male</option>
+					<option value="Female">Female</option>
+					<option value="Non-Binary">Non-binary</option>
+				</select>
+			</div>
+			<div class="cols" style="width:9%; text-align:right; color:white; font-size:1.1em">
+				Plan Tier:&ensp;
+			</div>
+			<div class="cols" style="width:6%">
+				<select name= "tiers" style="width:100%">
+					<option></option>
+					<option value="1">Tier 1</option>
+					<option value="2">Tier 2</option>
+					<option value="3">Tier 3</option>				
+				</select>
+			</div>
+			<div class="cols" style="width:10%; text-align:right; color:white; font-size:1.1em">
+				Referral Area:&ensp;
+			</div>
+			<div class="cols" style="width:7%">
+				<select name= "subject" style="width:100%">
+					<option></option>
+					<option value="Behavior">Behavior</option>
+					<option value="Language">Language</option>
+					<option value="Math">Math</option>
+					<option value="Reading">Reading</option>			
+				</select>
+			</div>
+			<div class="cols" style="width:12%; text-align:right; color:white; font-size:1.1em">
+				Intervention Area:&ensp;
+			</div>
+			<div class="cols" style="width:18%">
+				<select name="plan_area" style="width:100%">
+					<option></option>
+					<option value="Behavior - Excessive fears/phobias and/or worrying">Behavior - Excessive fears/phobias and/or worrying</option>
+					<option value="Behavior - Feelings of sadness">Behavior - Feelings of sadness</option>
+					<option value="Behavior - Lack of interest in friends and/or school">Behavior - Lack of interest in friends and/or school</option>
+					<option value="Behavior - Non-compliance">Behavior - Non-compliance</option>
+					<option value="Behavior - Physical Aggression">Behavior - Physical Aggression</option>
+					<option value="Behavior - Poor social skills">Behavior - Poor social skills</option>
+					<option value="Behavior - Verbal Aggression">Behavior - Verbal Aggression</option>
+					<option value="Behavior - Withdrawal">Behavior - Withdrawal</option>
+					<option value="Language - Social Interaction">Language - Social Interaction</option>
+					<option value="Language - Phonological Processing">Language - Phonological Processing</option>
+					<option value="Mathematics Calculation">Mathematics Calculation</option>
+					<option value="Mathematics Problem Solving">Mathematics Problem Solving</option>
+					<option value="Reading - Basic Reading Skills">Reading - Basic Reading Skills </option>
+					<option value="Reading - Reading Fluency Skills">Reading - Reading Fluency Skills</option>
+					<option value="Listening Comprehension">Listening Comprehension</option>
+					<option value="Oral Expression">Oral Expression</option>
+					<option value="Reading Comprehension">Reading Comprehension</option>
+					<option value="Written Expression">Written Expression</option>			
+				</select>
+			</div>
+		</div>
+
+		<div class="columns" style="display:flex; justify-content:flex-start;  padding-top:1.25em; padding-bottom:0.5em; align-items:center">
+			<div class="cols" style="width:34%"></div>
+			<div class="cols" style="width:14%; text-align:right"><button type="submit" class="btn btn-lg btn-primary" style="font-size:1em">Active Plan Report</button>
+			</div>
+			<div class="cols" style="width:4%"></div>
+			<div class="cols" style="width:14%; text-align:left"><button id="reset_button" type="reset" class="btn btn-lg btn-secondary" style="font-size:1em">Reset Fields</button>
+			</div>
+			<div class="cols" style="width:34%"></div>
+		</div>
+
+		<div class="columns" style="display:flex; padding-top:1em; justify-content:flex-start; text-align:center; align-items:center">
+			<div class = "cols" style="width:15%; text-align:center"></div>
+			<div class="cols" style="width:70%">
+				<h1 style="font-size:1.5em; color:white">School Level Reports</h1>
+			</div>
+			<div class="cols" style="width:15%"></div>
+		</div>
+
+		<div class="columns" style="display:flex; justify-content:flex-start;  padding-top:1em; padding-bottom:0.5em; align-items:center">
+			<div class="cols" style="width:15%; text-align:center"><button type="submit" form="report_form" formaction="{{url_for('tier_time')}}" class="btn btn-lg btn-info" style="font-size:1em; width:90%">Time On Tier Report</button>
+			</div>
+			<div class="cols" style="width:15%; text-align:center"><button type="submit" form="report_form" formaction="{{url_for('hearing')}}" class="btn btn-lg btn-info" style="font-size:1em; width:90%">Hearing Report</button>
+			</div>
+			<div class="cols" style="width:15%; text-align:center"><button type="submit" form="report_form" formaction="{{url_for('vision')}}" class="btn btn-lg btn-info" style="font-size:1em; width:90%">Vision Report</button>
+			</div>
+			<div class="cols" style="width:18%; text-align:center"><button type="submit" form="report_form" formaction="{{url_for('evaluation_timeline')}}" class="btn btn-lg btn-info" style="font-size:1em; width:95%">Evaluation Timeline Report</button>
+			</div>
+			<div class="cols" style="width:18%; text-align:center"><button type="submit" form="report_form" formaction="{{url_for('reading_code')}}" class="btn btn-lg btn-info" style="font-size:1em; width:90%">Code A/Code B Report</button>
+			</div>
+			<div class="cols" style="width:18%; text-align:center"><button type="submit" form="report_form" formaction="{{url_for('current_year_staffed')}}" class="btn btn-lg btn-info" style="font-size:1em; width:90%">Current Year Staffed</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+
+
+
+
+{%if get%}
+<div id="graph_info" class="container" style="width:95%; max-width:1600px; min-width:980px; padding-top:1em; text-align:center">
+<img id ="graph_image" src="{{get}}" {%if user.access_level==1%}style="width:45%"{%else%}style="width:85%"{%endif%}>
+<div style="padding-top:0.5em"><table id ="myenrollTable" class="display" >
+ 		 <thead>
+    			<tr>
+     		 <th>School Name</th>
+      		<th>Enrollment</th>
+      		<th>RtI Total</th>
+		<th>Pct RtI</th>
+		<th>Tier 2 Total</th>
+		<th>Pct RtI Tier 2</th>
+		<th>Tier 3 Total</th>
+		<th>Pct RtI Tier 3</th></tr></thead>
+		<tbody>
+		{%for row in enroll%}
+		<tr><td>&nbsp;{{row[0]}}&nbsp;</td>
+		    <td>&nbsp;{{row[1]}}&nbsp;</td>
+		    <td>&nbsp;{{row[2]}}&nbsp;</td>
+		    <td>&nbsp;{{row[3]}}%&nbsp;</td>
+		    <td>&nbsp;{{row[4]}}&nbsp;</td>
+		    <td>&nbsp;{{row[5]}}%&nbsp;</td>
+		    <td>&nbsp;{{row[6]}}&nbsp;</td>
+		    <td>&nbsp;{{row[7]}}%&nbsp;</td>
+		</tr>
+		{%endfor%}
+		</tbody></table>
+<div>
+</div>
+
+<script>
+$(function(){var d = new Date();
+        $("#graph_image").attr("src", "/static/images/plotreportget.png?"+d.getTime());
+})
+</script>
+<script>
+$(document).ready( function () {
+    $('#myenrollTable').DataTable();
+} );
+</script>
+
+{%endif%}
+
+
+{%if vis%}
+<script>
+$(document).ready( function () {
+    $('#myvisTable').DataTable();
+} );
+</script>
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+				<h2 style="font-size:1.5em;">Generated Vision Reports</h2>
+		</div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="csv"><a href="{{url_for('uploads', filename='visionexportcsv.csv')}}" download="vision.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="excel"><a href="{{url_for('uploads', filename='visionexportexcel.xlsx')}}" download="vision.xlsx" style="color:white">Export to Excel</a></button>
+		</div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="myvisTable" class="display" >
+ 		 <thead>
+    			<tr>
+     		 <th>Student ID</th>
+      		<th>Name</th>
+      		<th>School</th>
+		<th>Grade</th>
+		<th>Status</th>
+		<th>RtI Vision</th>
+		<th>RtI Vision Date</th></tr></thead>
+		<tbody>
+		{%for row in vis%}
+		<tr><td>&nbsp;{{row.__dict__['student_id']}}&nbsp;</td>
+		    <td>&nbsp;<a href="{{url_for('student_page', student_id=row.__dict__['student_id'])}}">{{row.__dict__['student_name']}}</a>&nbsp;</td>
+		    <td>&nbsp;{{row.__dict__['school']}}&nbsp;</td>
+		    <td data-order="{{row.__dict__['grade']}}">&nbsp;{%if row.__dict__['grade']==0%}K&nbsp;{%else%}{{row.__dict__['grade']}}&nbsp;{%endif%}</td>
+		    <td>&nbsp;{{row.__dict__['status']}}&nbsp;</td>
+		    <td>&nbsp;{{row.__dict__['rti_vision']}}&nbsp;</td>
+		    <td>&nbsp;{{row.__dict__['rti_vision_date']}}&nbsp;</td>
+		</tr>
+		{%endfor%}
+		</tbody></table>
+		</div>
+		</div>
+		
+{%endif%}
+
+{%if hear%}
+<script>
+$(document).ready( function () {
+    $('#myhearTable').DataTable();
+} );
+</script>
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+				<h2 style="font-size:1.5em;">Generated Hearing Reports</h2>
+		</div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<button class="btn btn-lg btn-info" id="csv" style="font-size:1.25em"><a href="{{url_for('uploads', filename='hearingexportcsv.csv')}}" download="hearing.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" id="excel" style="font-size:1.25em"><a href="{{url_for('uploads', filename='hearingexportexcel.xlsx')}}" download="hearing.xlsx" style="color:white">Export to Excel</a></button>
+		</div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="myhearTable" class="display" >
+ 		 <thead>
+    			<tr>
+     		 <th>Student ID</th>
+      		<th>Name</th>
+      		<th>School</th>
+		<th>Grade</th>
+		<th>Status</th>
+		<th>RtI Hearing</th>
+		<th>RtI Hearing Date</th></tr></thead>
+		<tbody>
+		{%for row in hear%}
+		<tr><td>&nbsp;{{row.__dict__['student_id']}}&nbsp;</td>
+		    <td>&nbsp;<a href="{{url_for('student_page', student_id=row.__dict__['student_id'])}}">{{row.__dict__['student_name']}}</a>&nbsp;</td>
+		    <td>&nbsp;{{row.__dict__['school']}}&nbsp;</td>
+		    <td data-order="{{row.__dict__['grade']}}">&nbsp;{%if row.__dict__['grade']==0%}K&nbsp;{%else%}{{row.__dict__['grade']}}&nbsp;{%endif%}</td>
+		    <td>&nbsp;{{row.__dict__['status']}}&nbsp;</td>
+		    <td>&nbsp;{{row.__dict__['rti_hearing']}}&nbsp;</td>
+		    <td>&nbsp;{{row.__dict__['rti_hearing_date']}}&nbsp;</td>
+		</tr>
+		{%endfor%}
+		</tbody></table>
+		</div>
+		</div>
+		
+{%endif%}
+
+{%if tier_test%}
+<script>
+$(document).ready( function () {
+    $('#mytimeTable').DataTable({'searching' : false,
+		"orderable" : true,
+		"order" : [[7, 'desc']],
+		"columnDefs" : [
+                { "type": "any-number", targets: 7 }
+            ]
+});
+} );
+</script>
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+				<h2 style="font-size:1.5em;">Generated Time on Tier Reports</h2>
+		</div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<div><button class="btn btn-lg btn-info" id="csv" style="font-size: 1.25em;"><a href="{{url_for('uploads', filename='timeexportcsv.csv')}}" download="time on tier.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" id="excel" style="font-size:1.25em"><a href="{{url_for('uploads', filename='timeexportexcel.xlsx')}}" download="time on tier.xlsx" style="color:white">Export to Excel</a></button>
+		</div></div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="mytimeTable" class="display" >
+ 		 <thead>
+    			<tr>
+     		 <th>Student ID</th>
+      		<th>Name</th>
+      		<th>School</th>
+		<th>Grade</th>
+		<th>Plan Tier</th>
+		<th>Plan Area</th>
+		<th>Plan Date</th>
+		<th>Days on Tier</th></tr></thead>
+		<tbody>
+		{%for row in tier_test%}
+		<tr><td>&nbsp;{{row[6]}}&nbsp;</td>
+		    <td>&nbsp;<a href="{{url_for('student_page', student_id=row[6])}}">{{row[5]}}</a>&nbsp;</td>
+		    <td>&nbsp;{{row[7]}}&nbsp;</td>
+		    <td data-order="{{row[8]}}">&nbsp;{%if row[8]==0%}K&nbsp;{%else%}{{row[8]}}&nbsp;{%endif%}</td>
+		    <td>&nbsp;{{row[4]}}&nbsp;</td>
+		    <td>&nbsp;<a href="/plan/{{row[5]}}/{{row[6]}}/{{row[3]}}/{{row[0]}}">{{row[3]}}</a>&nbsp;</td>
+		    <td>&nbsp;{{row[1]}}&nbsp;</td>
+		    <td>&nbsp;{{row[2]}}&nbsp;</td>
+		</tr>
+		{%endfor%}
+		</tbody></table>
+		</div>
+		</div>
+		
+{%endif%}
+
+{%if code_reading%}
+<script>
+	$(document).ready( function () {
+		$('#mycodeTable').DataTable({'searching':false,
+			"orderable" : true,
+		"order" : [[2, 'asc'], [5, 'asc']]
+		});
+	} );
+</script>
+
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+			<h2 style="font-size:1.5em;">Code A / Code B Report</h2>
+	</div>
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="csv"><a href="{{url_for('uploads', filename='codea_codeb_csv.csv')}}" download="codea_codeb.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="excel"><a href="{{url_for('uploads', filename='codea_codeb_excel.xlsx')}}" download="codea_codeb.xlsx" style="color:white">Export to Excel</a></button>
+	</div>
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="mycodeTable" class="display" >
+			<thead>
+				<tr>
+					<th>Student ID</th>
+					<th>Name</th>
+					<th>School</th>
+					<th>Grade</th>
+					<th>Status</th>
+					<th>Code</th>
+			</tr>
+			</thead>
+			<tbody>
+			{%for read in code_reading%}
+				<tr>
+					<td>&nbsp;{{read.student_id}}&nbsp;</td>
+					<td>&nbsp;<a href="{{url_for('student_page', student_id=read.student_id)}}">{{read.student_name}}</a>&nbsp;</td>
+					<td>&nbsp;{{read.school}}&nbsp;</td>
+					<td data-order='{{read.grade}}'>&nbsp;{%if read.grade==0%}K&nbsp;{%else%}{{read.grade}}&nbsp;{%endif%}</td>
+					<td>&nbsp;{{read.status}}&nbsp;</td>
+					<td>{{read.code}}&nbsp;</td>
+				</tr>
+			{%endfor%}
+			</tbody>
+		</table>
+	</div>
+</div>
+{%endif%}
+
+
+{%if timeline%}
+<script>
+	$(document).ready( function () {
+		$('#myevalTable').DataTable({'searching':false,
+			"orderable" : true,
+		"order" : [[6, 'desc']]
+		});
+	} );
+</script>
+
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+			<h2 style="font-size:1.5em;">Evaluation Timeline Report</h2>
+	</div>
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="csv"><a href="{{url_for('uploads', filename='eval_timeline_csv.csv')}}" download="evaluation_timeline.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="excel"><a href="{{url_for('uploads', filename='eval_timeline_excel.xlsx')}}" download="evaluation_timeline.xlsx" style="color:white">Export to Excel</a></button>
+	</div>
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="myevalTable" class="display" >
+			<thead>
+				<tr>
+					<th>Student ID</th>
+					<th>Name</th>
+					<th>School</th>
+					<th>Grade</th>
+					<th>Status</th>
+					<th>Referred date</th>
+					<th>Days since Referral</th>
+
+			</tr>
+			</thead>
+			<tbody>
+			{%for time in timeline%}
+				<tr>
+					<td>&nbsp;{{time.student_id}}&nbsp;</td>
+					<td>&nbsp;<a href="{{url_for('student_page', student_id=time.student_id)}}">{{time.student_name}}</a>&nbsp;</td>
+					<td>&nbsp;{{time.school}}&nbsp;</td>
+					<td data-order='{{time.grade}}'>&nbsp;{%if time.grade==0%}K&nbsp;{%else%}{{time.grade}}&nbsp;{%endif%}</td>
+					<td>&nbsp;{{time.status}}&nbsp;</td>
+					<td>{{time.referred_date_timeline}}&nbsp;</td>
+					<td data-order='{{time.days_since_referral}}'>{{time.days_since_referral}}&nbsp;</td>
+				</tr>
+			{%endfor%}
+			</tbody>
+		</table>
+	</div>
+</div>
+{%endif%}
+
+{%if staffed_date_results%}
+<script>
+	$(document).ready( function () {
+		$('#mystaffTable').DataTable({
+			'searching':false,
+			"orderable" : true,
+			"order" : [[5, 'desc']]
+		});
+	} );
+</script>
+
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+			<h2 style="font-size:1.5em;">Current Year Staffed Report</h2>
+	</div>
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="csv"><a href="{{url_for('uploads', filename='current_year_staffed_csv.csv')}}" download="current_year.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="excel"><a href="{{url_for('uploads', filename='current_year_staffed_excel.xlsx')}}" download="current_year.xlsx" style="color:white">Export to Excel</a></button>
+	</div>
+	<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="mystaffTable" class="display" >
+			<thead>
+				<tr>
+					<th>Student ID</th>
+					<th>Name</th>
+					<th>School</th>
+					<th>Grade</th>
+					<th>Status</th>
+					<th>Staffed date</th>
+					<th>Staffed Area</th>
+
+			</tr>
+			</thead>
+			<tbody>
+			{%for staff in staffed_date_results%}
+			{% set grade_test= (staff.grade | int) %}
+				<tr>
+					<td>&nbsp;{{staff.student_id}}&nbsp;</td>
+					<td>&nbsp;<a href="{{url_for('student_page', student_id=staff.student_id)}}">{{staff.student_name}}</a>&nbsp;</td>
+					<td>&nbsp;{{staff.school}}&nbsp;</td>
+					<td data-order='{{staff.grade}}'>&nbsp;{%if grade_test==0%}K&nbsp;{%else%}{{staff.grade | int}}&nbsp;{%endif%}</td>
+					<td>&nbsp;{{staff.status}}&nbsp;</td>
+					<td>{{staff.staffed_date}}&nbsp;</td>
+					<td>{{staff.staffed_area}}&nbsp;</td>
+				</tr>
+			{%endfor%}
+			</tbody>
+		</table>
+	</div>
+</div>
+{%endif%}
+
+{%if length%}<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<h1 style="font-size:2em;">{{length}} Active Plans from Search </h1></div>
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:flex-end">
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="csv"><a href="{{url_for('uploads', filename='RTIexportcsv.csv')}}" download="RTI.csv" style="color:white">Export to CSV</a></button>&emsp;&emsp;
+		<button class="btn btn-lg btn-info" style="font-size:1.25em" id="excel"><a href="{{url_for('uploads', filename='RTIexportexcel.xlsx')}}" download="RTI.xlsx" style="color:white">Export to Excel</a></button>
+		</div>
+		</div>
+		
+		<script>
+$(document).ready( function () {
+    $('#ActiveTable').DataTable();
+} );
+</script>
+<div class="container" style="width:95%; max-width:1350px; min-width:1080px">
+		
+		<div class="columns" style="display:flex; padding-bottom:1em; justify-content:center">
+		<table id ="ActiveTable" class="display" >
+ 		 <thead>
+    			<tr>
+     		 <th>Student ID</th>
+      		<th>Name</th>
+      		<th>School</th>
+		<th>Grade</th>
+		<th>Status</th>
+		<th>Intervention Level</th>
+		<th>Intervention Area</th></tr></thead>
+		<tbody>
+		{%for result in results%}
+		<tr><td>&nbsp;{{result[1].__dict__['student_id']}}&nbsp;</td>
+		    <td>&nbsp;<a href="{{url_for('student_page', student_id=result[1].__dict__['student_id'])}}">{{result[1].__dict__['student_name']}}</a>&nbsp;</td>
+		    <td>&nbsp;{{result[1].__dict__['school']}}&nbsp;</td>
+		    <td data-order="{{result[1].__dict__['grade']}}">&nbsp;{%if result[1].__dict__['grade']==0%}K&nbsp;{%else%}{{result[1].__dict__['grade']}}&nbsp;{%endif%}</td>
+		    <td>&nbsp;{{result[1].__dict__['status']}}&nbsp;</td>
+		    <td style="text-align:center">&nbsp;{{result[0].__dict__['intervention_level']}}&nbsp;</td>
+		    <td>&nbsp;<a href="/plan/{{result[1].__dict__['student_name']}}/{{result[1].__dict__['student_id']}}/{{result[0].__dict__['intervention_area']}}/{{result[0].__dict__['id']}}">{{result[0].__dict__['intervention_area']}}</a>&nbsp;</td>
+		</tr>
+		{%endfor%}
+		</tbody></table>
+		</div>
+		</div>
+		{%endif%}
+
+<script>
+$('#csv').click(function(){
+alert('clicked!')
+$.ajax({url: '/RTI/uploads/RTIexportcsv.csv', data: {type : 'CSV'},
+		method : 'POST'}).done(function(data){alert(success!)})	
+})
+
+</script>
+
+
+<div class="container" style="width:98%; max-width:1600px; min-width:1180px">
+	<div class="columns" style="display:flex; padding-bottom:1em; padding-top:0.5em; justify-content:space-evenly">
+{%if script%}<div class="col" style="width:100%">{{ script|safe }}{%endif%}
+{%if div%}{{ div|safe }}</div></div>{%endif%}
+{%if script_1%}<div class="columns" style="display:flex; padding-bottom:1em; padding-top:0.5em; justify-content:space-evenly">
+<div class="col" style="width:500px">{{ script_1|safe }}{%endif%}
+{%if div%}{{ div_1|safe }}</div></div>{%endif%}
+
+	
+</div>
+
+
+{%if user.access_level>=2%}
+<script type="text/javascript">
+	var placeholder_school={%if lang=='en'%}'Select School(s)'{%else%}'Seleccionar escuela(s)'{%endif%};
+	var placeholder_grades={%if lang=='en'%}'Choose Grade(s) From School(s)'{%else%}'Elija grado(s) de escuela(s)'{%endif%};
+	var search_school={%if lang=='en'%}'Search Schools'{%else%}'Buscar escuelas'{%endif%};
+	
+	$('select[multiple].mult').multiselect({selectAll: true,
+	search : true,
+	texts: {placeholder: placeholder_school,
+		search: search_school
+		},
+	maxWidth : 290,
+	maxHeight : 350,
+	onOptionClick: function( element, option ){
+	var grades=[];
+	var typeOfSchool=[];
+	var options=[];
+	var y ="";
+	var z=0;
+	
+	const dict_list={{schools_json | safe}};
+	
+	var dict={};
+	$.each(dict_list, function(index,value){
+		dict[value['school_name']]=value['school_type'];
+	});
+	
+	
+	
+	$.each($('select[multiple].mult').val(), function(index, value){if (typeOfSchool.indexOf(dict[value])==-1){typeOfSchool.push(dict[value]);}
+	});
+	typeOfSchool.sort(function(a,b){return a-b}) 
+	if (typeOfSchool.indexOf(6)>-1){typeOfSchool=[1,2,3]}
+	else if (typeOfSchool.indexOf(5)>-1){
+		if (typeOfSchool.indexOf(4)>-1 || typeOfSchool.indexOf(1)>-1){
+			typeOfSchool=[1,2,3]
+		}
+		else{typeOfSchool=[2,3]};
+	}
+	 else if (typeOfSchool.indexOf(4)>-1){ if (typeOfSchool.indexOf(3)>-1){typeOfSchool=[1,2,3]}
+						else{typeOfSchool=[1,2]}}
+	else{/*continue*/};
+	for (var i =0; i< typeOfSchool.length ; i++){if (typeOfSchool[i]==1){for (var j = 0; j<=5; j++){if (j==0){y='K'}
+												else{y='Grade'+ j; z=j};options.push({'name' : y, 'value' : z});}}
+							 if (typeOfSchool[i]==2){for (var j = 6; j<=8; j++){y='Grade'+ j;
+										 z=j;
+										options.push({'name' : y, 'value' : z});}}
+							 if (typeOfSchool[i]==3){for (var j = 9; j<=12; j++){y='Grade'+ j;
+										 z=j;
+										options.push({'name' : y, 'value' : z});}};}
+	
+	$('select[multiple].mult1').multiselect('loadOptions', options);
+	},
+	
+	onSelectAll: function( element, selected ){
+	if(selected>0){
+	var grades=[];
+	var typeOfSchool=[];
+	var options=[];
+	var y ="";
+	var z=0;
+		
+	const dict_list={{schools_json | safe}};
+	
+	var dict={};
+	$.each(dict_list, function(index,value){
+		dict[value['school_name']]=value['school_type'];
+	});
+	
+	$.each($('select[multiple].mult').val(), function(index, value){if (typeOfSchool.indexOf(dict[value])==-1){typeOfSchool.push(dict[value]);}
+	});
+	typeOfSchool.sort(function(a,b){return a-b})
+	if (typeOfSchool.indexOf(6)>-1){typeOfSchool=[1,2,3]}
+	else if (typeOfSchool.indexOf(5)>-1){
+		if (typeOfSchool.indexOf(4)>-1 || typeOfSchool.indexOf(1)>-1){
+			typeOfSchool=[1,2,3]
+		}
+		else{typeOfSchool=[2,3]};
+	}
+	 else if (typeOfSchool.indexOf(4)>-1){ if (typeOfSchool.indexOf(3)>-1){typeOfSchool=[1,2,3]}
+						else{typeOfSchool=[1,2]}}
+	else{/*continue*/};
+	for (var i =0; i< typeOfSchool.length ; i++){if (typeOfSchool[i]==1){for (var j = 0; j<=5; j++){if (j==0){y='K'}
+												else{y='Grade'+ j; z=j};options.push({'name' : y, 'value' : z});}}
+							 if (typeOfSchool[i]==2){for (var j = 6; j<=8; j++){y='Grade'+ j;
+										 z=j;
+										options.push({'name' : y, 'value' : z});}}
+							 if (typeOfSchool[i]==3){for (var j = 9; j<=12; j++){y='Grade'+ j;
+										 z=j;
+										options.push({'name' : y, 'value' : z});}};}}
+	else{var options=[];}
+	$('select[multiple].mult1').multiselect('loadOptions', options);
+	}
+	});
+ 
+$('select[multiple].mult1').multiselect({selectAll: true,
+texts: {placeholder: placeholder_grades},
+maxWidth : 235,
+maxHeight : 380
+
+});
+ document.ready(function(){$('#school_list').multiselect({
+
+}
+  );
+$('#grade_mult').multiselect({}
+  );
+   })
+</script>
+{%endif%}
+
+{% if user.access_level==1 %}
+<script>
+var placeholder_grades={%if lang=='en'%}'Choose Grade(s) From School'{%else%}'Elija grado(s) de escuela'{%endif%};
+$(document).ready(function(){
+
+$('select[multiple].mult1').multiselect({selectAll: true,
+texts: {placeholder: placeholder_grades},
+maxWidth : 200,
+maxHeight : 230
+
+});
+$('#grade_mult').multiselect({}
+  );
+var options=[];
+var typeOfSchool=[];
+var y ="";
+var z=0;
+
+const dict_list={{schools_json | safe}};
+
+var dict={};
+$.each(dict_list, function(index,value){
+	dict[value['school_name']]=value['school_type'];
+});
+
+typeOfSchool.push(dict['{{user.school}}']);
+if (typeOfSchool[0]==1){for (var j = 0; j<=5; j++){if (j==0){y='K'}
+						else{y='Grade'+ j; z=j};
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==2){for (var j = 6; j<=8; j++){y='Grade'+ j; z=j;
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==3){for (var j = 9; j<=12; j++){y='Grade'+ j;
+						    z=j;
+						    options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==4){for (var j = 0; j<=8; j++){if (j==0){y='K'}
+						else{y='Grade'+ j; z=j};
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==5){for (var j = 6; j<=12; j++){y='Grade'+ j;
+						z=j;
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==6){for (var j = 0; j<=12; j++){if (j==0){y='K'}
+						else{y='Grade'+ j; z=j};
+						options.push({'name' : y, 'value' : z});}}
+
+$('select[multiple].mult1').multiselect('loadOptions', options);
+
+});
+
+</script>
+
+{% endif %}
+
+<script type="text/javascript">
+$('#reset_button').on('click', function(){
+	{%if user.access_level>1%}$('select[multiple].mult').multiselect('reset');{%endif%}
+	$('select[multiple].mult1').multiselect('reset');
+	var options=[];
+	$('select[multiple].mult1').multiselect('loadOptions', options);
+})
+$('#close_button').on('click', function(){
+		event.preventDefault();
+		window.location.href="{{url_for('RTI')}}";
+	})
+</script>
+  
+
+
+<!--<canvas id="myChart" width="100" height="40"></canvas>-->
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+
+
+
+{%endblock%}
+

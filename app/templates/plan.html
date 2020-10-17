@@ -1,0 +1,48 @@
+{%extends "base2.html" %}
+
+{%block content%}
+<div class="container" style="background-color:gainsboro">
+	<div class="row">
+		<div class="col-md-5"><h1>Intervention Plans</h1></div>
+		<div class="col-md-7"><br><button class="btn btn-md btn-secondary" id="revise_plan">Revise Plan</button> &emsp;
+		      <button class="btn btn-md btn-secondary" id="print_plan">Print Plan</button> &emsp;
+		      <button class="btn btn-md btn-secondary" id="save_plan">Save</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-2" style="text-align:right">
+		<p><b>Name:</b><br>
+		<b>Current School:</b><br>
+		<b>Plan Date:</b><br>
+		<b>Plan Developed at:</b><br></p>
+		</div>
+		<div class="col-md-3" style="text-align:left">
+		{{student.student_name}}<br>
+		{{student.school}}<br>
+		<input type="text" style="background-color:beige" readonly value="{{plan.plan_date}}"/><br>
+		<input type = "text" name="school_develop" id="school_develop" style="width:170px; background-color:beige" readonly value = "{{plan.school_develop}}"/>
+			
+		</div>
+		<div class="col-md-2" style="text-align:right">
+		<b>Date of Birth:</b><br>
+		<b>Grade:</b><br>
+		<b>Level of Intevention:</b><br>
+		<b>Teacher:</b><br>
+		</div>
+		<div class="col-md-2" style="text-align:left">
+		<b>{{student.date_birth}}</b><br>
+		<b>{{student.grade}}</b><br>
+		<b>{{plan.intervention_level}}</b><br>
+		<input type="text" id = "teacher" value="{{plan.teacher}}" style="width:170px" {% if plan.deactive== True%}readonly{%endif%}/><br>
+		</div>
+		<div class="col-md-3" style="text-align:center">
+		<button class="btn btn-md btn-success" id="finalize_plan">Finalized Plan</button><br><br>
+			<button class="btn btn-md btn-secondary" id="revised_plan">Revised Plan</button><br>
+			<input type="checkbox" id="active" {%if plan.deactive == False %}checked{%endif%}/> &thinsp;Active Plan &emsp;
+		</div>
+  	</div>
+</div>
+
+
+
+{%endblock%}

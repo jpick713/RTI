@@ -1,0 +1,12 @@
+{% extends "base2.html"%}
+
+	{%block content%}
+		{% if user.is_authenticated%}
+		<h1>Hello, {{user.username}}!</h1>
+			<a href = "/RTI" style="font-size:200%">Ready to search database?</a>
+		{%else%}
+			<a href= "/login" style="font-size:200%">Please login!</a>
+		{% endif %}
+
+	
+	{% endblock %}

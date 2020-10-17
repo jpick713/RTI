@@ -1,0 +1,454 @@
+{% extends "base2.html"%}
+{% block content%}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<style>
+#grade_mult > .ms-options > ul label {
+
+    position: relative;
+
+    display: inline-block;
+
+    width: 100%;
+
+    padding: 4px 4px 4px 0px;
+
+    margin: 1px 0;
+
+    border: 5px solid;
+
+}
+</style>
+<div style="padding-left:3em"><a href="{{url_for('translate', lang=lang)}}" style="font-size:18px">{%if lang=='en'%}&#191;Espanol?{%else%}English?{%endif%}</a></div>
+<div class="container" style="background-color: #50C878; width:95%; max-width:1600px; min-width:1400px; padding-top:0.5em; margin-top:1em; font-size:120%;">
+	<div class="columns" style="display:flex; justify-content:flex-start; align-items:center ">
+		<div class= "cols" style="width:100%; text-align:center; color:white"><h1 style="font-size:200%;">RtI/MTSS {{translate(text='Student Lookup', src='en', dest=['{}'.format(lang)]) }}</h1></div>
+	</div>
+	<form id="rti" action="/RTI" method="post" novalidate>
+	<div class="columns" style="display:flex; justify-content:flex-start; padding-top:0.5em; align-items:center">
+		<div class= "cols" {%if user.access_level>1%} style="width:10%; {%else%} style="width:30%; {%endif%} text-align:right; color:white; font-size: 110%">{%if user.access_level==1%}{{translate(text='School', src='en', dest=['{}'.format(lang)]) }}:&ensp;<b>{{user.school}}</b>&ensp;{%else%}{{translate(text='Schools', src='en', dest=['{}'.format(lang)]) }}:&ensp;{%endif%}</div>
+		{%if user.access_level>1%}<div class= "cols" style="width:20%; text-align:left; font-size: 110%">
+			{%if user.access_level==2%}<select class="mult" name="school" multiple id="school_list" style="width:100%">
+							<option class="school" value="{{user.school}}">&ensp;{{user.school}}</option>
+					{% if user.secondary %}
+							<option class="school" value="{{user.secondary}}">&ensp;{{user.secondary}}</option>
+					{% endif %}
+					{% if user.third %}
+							<option class="school" value="{{user.third}}">&ensp;{{user.third}}</option>
+					{% endif %}
+					{% if user.fourth %}
+							<option class="school" value="{{user.fourth}}">&ensp;{{user.fourth}}</option>
+					{% endif %}
+						</select>
+			{%else%}<select class="mult" name="school" multiple id="school_list" style="width:100%">
+					{%for school in all_schools%}
+					<option class="school" value="{{school.school_name}}">&ensp;{{school.school_name}}</option>
+					{%endfor%}
+				</select>
+			{%endif%}
+			</div>{% endif %}
+		<div class= "cols" style="width:19%; text-align:left; font-size: 120%; padding-left:1em">
+			<select class="mult1" id="grade_mult" name="grade" style="width:100%; font-size: 120%" multiple></select>
+		</div>
+		<div class= "cols" style="width:7%; text-align:right; font-size: 120%; color: white">{{translate(text='Student', src='en', dest=['{}'.format(lang)])}}:&thinsp;</div>
+		<div class= "cols" style="width:27%; text-align:left; font-size: 110%"><input type="text" name = "search" id="name_to_search" style = "width:100%" placeholder="{{translate(text='Search student by name or ID', src='en', dest=['{}'.format(lang)])}}"/></div>
+		<div class= "cols" style="width:17%; text-align:left; font-size: 120%; padding-left:1em"><button type="submit" class="btn btn-secondary btn-md" id="name_search"><span style ="font-size:125%;">{{translate(text='Search student & school', src='en', dest=['{}'.format(lang)])}}</span></button>
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; padding-top:1em; align-items:center">
+		<div class= "cols" style="width:10%; text-align:right; font-size: 120%; color: white">{%if lang=='en'%}Race{%else%}Raza{%endif%}:&ensp;</div>
+		<div class= "cols" style="width:6%; text-align:left; font-size: 110%"><select name="race" style="width:100%">
+										<option></option>
+  										<option value="Asian">{{translate(text='Asian', src='en', dest=['{}'.format(lang)])}}</option>
+  										<option value="Black">{{translate(text='Black', src='en', dest=['{}'.format(lang)])}}</option>
+  										<option value="Hispanic">{{translate(text='Hispanic', src='en', dest=['{}'.format(lang)])}}</option>
+  										<option value="White">{{translate(text='White', src='en', dest=['{}'.format(lang)])}}</option></select></div>
+		<div class= "cols" style="width:7%; text-align:right; font-size: 120%; color: white">{{translate('Tiers', src='en', dest=['{}'.format(lang)])}}:&ensp;</div>
+		<div class= "cols" style="width:7%; text-align:left; font-size: 110%"><select name="tiers" style="width:100%">
+										<option></option>
+  										<option value="1">{{translate('Tier', src='en', dest=['{}'.format(lang)])}} 1</option>
+  										<option value="2">{{translate('Tier', src='en', dest=['{}'.format(lang)])}} 2</option>
+										<option value="3">{{translate('Tier', src='en', dest=['{}'.format(lang)])}} 3</option></select></div>
+  		<div class= "cols" style="width:10%; text-align:right; font-size: 120%; color: white">{{translate(text='Gender', src='en', dest=['{}'.format(lang)])}}:&ensp;</div>
+		<div class= "cols" style="width:9%; text-align:left; font-size: 110%"><select name="gender" style = "width:100%">
+										<option></option>
+  										<option value="Male">{{translate(text='Male', src='en', dest=['{}'.format(lang)])}}</option>
+  										<option value="Female">{{translate(text='Female', src='en', dest=['{}'.format(lang)])}}</option>
+  										<option value="Non-Binary">{{translate(text='Non-binary', src='en', dest=['{}'.format(lang)])}}</option></select></div>
+		<div class= "cols" style="width:7%; text-align:right; font-size: 120%; color:white">FLEID:&thinsp;</div>
+		<div class= "cols" style="width:10%; text-align:left; font-size: 110%"><input type= "text" name = "fleid" style="width:100%"/></div>
+		<div class= "cols" style="width:6%; text-align:right; font-size: 120%; color: white">{{translate(text='Status', src='en', dest=['{}'.format(lang)])}}:&ensp;</div>
+		<div class= "cols" style="width:11%; text-align:left; font-size: 120%; vertical-align:middle"><select class="mult_status" id="mult_status" name="status" style = "width:100%" multiple>
+  									<option value="Active">{{translate(text='Active', src='en', dest=['{}'.format(lang)])}}</option>
+									<option value="Referred">{{translate(text='Referred', src='en', dest=['{}'.format(lang)])}}</option>
+									<option value="Monitor">{{translate(text='Monitor', src='en', dest=['{}'.format(lang)])}}</option>
+									<option value="Watch">{{translate(text='Watch', src='en', dest=['{}'.format(lang)])}}</option>
+									<option value="Staffed">{{translate(text='Staffed', src='en', dest=['{}'.format(lang)])}}</option>
+									<option value="Discontinued">{{translate(text='Discontinued', src='en', dest=['{}'.format(lang)])}}</option>
+  									<option value="Inactive">{{translate(text='Inactive', src='en', dest=['{}'.format(lang)])}}</option></select>
+  									</div>
+		<div class= "cols" style="width:12%; text-align:right; padding-left:1em; font-size: 110%">
+			<div class='mini-container' style='margin-top:0.25em; width:100%'><button type="submit" class="btn btn-secondary btn-md" style="font-size: 110%">{{translate('Run Search', src='en', dest=['{}'.format(lang)])}}</button></div>
+			<div class='mini-container' style='margin-top:0.5em; width:100%; margin-bottom:0.25em'><button id="reset_button" type="reset" class="btn btn-secondary btn-md" style="font-size: 110%">{{translate('Clear Fields', src='en', dest=['{}'.format(lang)])}}</button></div></div>
+		<!--<div class= "cols" style="width:8%; text-align:center; font-size: 110%"><button id="reset_button" type="reset" class="btn btn-md" style="font-size: 105%">Clear Fields</button></div>-->		
+	</div></form>
+	<div class="columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:1em; padding-bottom:1em">
+		<div class="cols" style="width:10%"></div>
+		<div class= "cols" style="width:40%; text-align:right"><button class="button btn-md btn-secondary" style="font-size: 110%" type = "submit" form="rti" formaction="/fid">&nbsp;<span>{{translate('Plans with Upcoming or Incomplete', src='en', dest=['{}'.format(lang)])}}<br>{{translate('Fidelity Assessments', src='en', dest=['{}'.format(lang)])}}</span></button></div>
+		<div class="cols" style="width:5%"></div>
+		<div class= "cols" style="width:15%; text-align:left; padding-left:1em"><button class="button btn-md btn-secondary" id="add_student" style="padding-left:10px; padding-right: 10px; font-size:110%" onclick="location.href= '/addStudent'">{{translate('Add New Student to', src='en', dest=['{}'.format(lang)])}} RtI/MTSS</button></div>
+		<div class="cols" style="width:30%"></div>
+		<!--<div class= "cols" style="width:15%; text-align:left; font-size: 120%; padding-left: 1em"><button id="rev" name="rev" form="rti" formaction="/rev" style="padding-left:19px; padding-right:19px; padding-top:5px; padding-bottom:5px"><span style="font-size:120%">Rev</span></button></div>-->
+	</div>
+</div>
+
+{%if user.access_level>=2%}
+<script type="text/javascript">
+var placeholder_status="{{translate(text='Select Statuses', src='en', dest=['{}'.format(lang)]) }}";
+var placeholder_school="{{translate(text='Select School(s)', src='en', dest=['{}'.format(lang)]) }}";
+var placeholder_grades="{{translate(text='Choose Grade(s) From School(s)', src='en', dest=['{}'.format(lang)]) }}";
+var search_school="{{translate(text='Search Schools', src='en', dest=['{}'.format(lang)]) }}";
+$('select[multiple].mult_status').multiselect({selectAll: true,
+texts: {placeholder: placeholder_status
+	},
+maxWidth : 200,
+maxHeight : 250});
+
+$('select[multiple].mult').multiselect({selectAll: true,
+search : true,
+texts: {placeholder: placeholder_school,
+	search:search_school
+	},
+maxWidth : 290,
+maxHeight : 350,
+onOptionClick: function( element, option ){
+var grades=[];
+var typeOfSchool=[];
+var options=[];
+var y ="";
+var z=0;
+
+const dict_list={{schools_json | safe}};
+
+var dict={};
+$.each(dict_list, function(index,value){
+	dict[value['school_name']]=value['school_type'];
+});
+
+
+
+$.each($('select[multiple].mult').val(), function(index, value){if (typeOfSchool.indexOf(dict[value])==-1){typeOfSchool.push(dict[value]);}
+});
+typeOfSchool.sort(function(a,b){return a-b}) 
+if (typeOfSchool.indexOf(6)>-1){typeOfSchool=[1,2,3]}
+else if (typeOfSchool.indexOf(5)>-1){
+	if (typeOfSchool.indexOf(4)>-1 || typeOfSchool.indexOf(1)>-1){
+		typeOfSchool=[1,2,3]
+	}
+	else{typeOfSchool=[2,3]};
+}
+ else if (typeOfSchool.indexOf(4)>-1){ if (typeOfSchool.indexOf(3)>-1){typeOfSchool=[1,2,3]}
+					else{typeOfSchool=[1,2]}}
+else{/*continue*/};
+for (var i =0; i< typeOfSchool.length ; i++){if (typeOfSchool[i]==1){for (var j = 0; j<=5; j++){if (j==0){y='K'}
+											else{y='Grade'+ j; z=j};options.push({'name' : y, 'value' : z});}}
+					     if (typeOfSchool[i]==2){for (var j = 6; j<=8; j++){y='Grade'+ j;
+									 z=j;
+									options.push({'name' : y, 'value' : z});}}
+					     if (typeOfSchool[i]==3){for (var j = 9; j<=12; j++){y='Grade'+ j;
+									 z=j;
+									options.push({'name' : y, 'value' : z});}};}
+
+$('select[multiple].mult1').multiselect('loadOptions', options);
+},
+
+onSelectAll: function( element, selected ){
+if(selected>0){
+var grades=[];
+var typeOfSchool=[];
+var options=[];
+var y ="";
+var z=0;
+/*var dict={"Bartram Trail" : 3, "Creekside" : 3 , "Nease" : 3 , "Patriot Oaks" : 4, "Pacetti Bay" : 2, "Ketterlinus": 1
+		, "Liberty Pines" : 4, "Webster" : 1, "Sebastian" : 2};*/
+
+const dict_list={{schools_json | safe}};
+
+var dict={};
+$.each(dict_list, function(index,value){
+	dict[value['school_name']]=value['school_type'];
+});
+
+$.each($('select[multiple].mult').val(), function(index, value){if (typeOfSchool.indexOf(dict[value])==-1){typeOfSchool.push(dict[value]);}
+});
+typeOfSchool.sort(function(a,b){return a-b})
+if (typeOfSchool.indexOf(6)>-1){typeOfSchool=[1,2,3]}
+else if (typeOfSchool.indexOf(5)>-1){
+	if (typeOfSchool.indexOf(4)>-1 || typeOfSchool.indexOf(1)>-1){
+		typeOfSchool=[1,2,3]
+	}
+	else{typeOfSchool=[2,3]};
+}
+ else if (typeOfSchool.indexOf(4)>-1){ if (typeOfSchool.indexOf(3)>-1){typeOfSchool=[1,2,3]}
+					else{typeOfSchool=[1,2]}}
+else{/*continue*/};
+for (var i =0; i< typeOfSchool.length ; i++){if (typeOfSchool[i]==1){for (var j = 0; j<=5; j++){if (j==0){y='K'}
+											else{y='Grade'+ j; z=j};options.push({'name' : y, 'value' : z});}}
+					     if (typeOfSchool[i]==2){for (var j = 6; j<=8; j++){y='Grade'+ j;
+									 z=j;
+									options.push({'name' : y, 'value' : z});}}
+					     if (typeOfSchool[i]==3){for (var j = 9; j<=12; j++){y='Grade'+ j;
+									 z=j;
+									options.push({'name' : y, 'value' : z});}};}}
+else{var options=[];}
+$('select[multiple].mult1').multiselect('loadOptions', options);
+}
+});
+ 
+$('select[multiple].mult1').multiselect({selectAll: true,
+texts: {placeholder: placeholder_grades },
+maxWidth : 235,
+maxHeight : 380
+
+});
+ document.ready(function(){$('#school_list').multiselect({
+
+}
+  );
+$('#grade_mult').multiselect({}
+  );
+
+  
+$('#mult_status').multiselect({}
+  );
+   })
+</script>
+{%endif%}
+
+{% if user.access_level==1 %}
+<script>
+var placeholder_status="{{translate(text='Select Statuses', src='en', dest=['{}'.format(lang)]) }}";
+var placeholder_grades="{{translate(text='Choose Grade(s) From School(s)', src='en', dest=['{}'.format(lang)]) }}";
+$(document).ready(function(){
+$('select[multiple].mult_status').multiselect({selectAll: true,
+texts: {placeholder: placeholder_status
+	},
+maxWidth : 200,
+maxHeight : 250})
+
+$('#mult_status').multiselect({}
+  );
+
+$('select[multiple].mult1').multiselect({selectAll: true,
+texts: {placeholder: placeholder_grades },
+maxWidth : 235,
+maxHeight : 300
+
+});
+$('#grade_mult').multiselect({}
+  );
+var options=[];
+var typeOfSchool=[];
+var y ="";
+var z=0;
+
+const dict_list={{schools_json | safe}};
+
+var dict={};
+$.each(dict_list, function(index,value){
+	dict[value['school_name']]=value['school_type'];
+});
+
+typeOfSchool.push(dict['{{user.school}}']);
+if (typeOfSchool[0]==1){for (var j = 0; j<=5; j++){if (j==0){y='K'}
+						else{y='Grade'+ j; z=j};
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==2){for (var j = 6; j<=8; j++){y='Grade'+ j; z=j;
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==3){for (var j = 9; j<=12; j++){y='Grade'+ j;
+						z=j;
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==4){for (var j = 0; j<=8; j++){if (j==0){y='K'}
+						else{y='Grade'+ j; z=j};
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==5){for (var j = 6; j<=12; j++){y='Grade'+ j;
+						z=j;
+						options.push({'name' : y, 'value' : z});}}
+if (typeOfSchool[0]==6){for (var j = 0; j<=12; j++){if (j==0){y='K'}
+						else{y='Grade'+ j; z=j};
+						options.push({'name' : y, 'value' : z});}}
+
+$('select[multiple].mult1').multiselect('loadOptions', options);
+
+});
+
+
+</script>
+
+{% endif %}
+
+<script type="text/javascript">
+$('#reset_button').on('click', function(){
+	{%if user.access_level>1%}$('select[multiple].mult').multiselect('reset');{%endif%}
+	$('select[multiple].mult1').multiselect('reset');
+	$('select[multiple].mult_status').multiselect('reset');
+	var options=[];
+	$('select[multiple].mult1').multiselect('loadOptions', options);
+})
+</script>
+
+
+ <script>
+$('#name_search').on('click', function(){
+var x = $('#name_to_search').val();
+{%if lang=='es'%}
+        var display_text= "Entrada de texto no v\u00e1lida, el cuadro no puede estar vac\u00edo.";
+	{%else%}
+	var display_text="Invalid text entry, box cannot be empty.";
+{%endif%}
+if (x.trim().length==0){alert(display_text);
+		return false;}
+
+})
+</script>
+
+
+{% if (results and (fid== False and rev == False)) %}
+ <style>table.tablesorter tbody tr.normal-row td {
+background: #d3d3d3;
+  color: #000000;
+}
+table.tablesorter tbody tr.alt-row td {
+background: #F0FFF0;
+  color: #000000;
+}
+table th,td{height:50px}</style>
+
+<div style="width:98%; max-width:1550px; min-width:1400px; padding-top:1em; margin-left:auto; margin-right:auto; max-height:800px; overflow-y:auto">
+
+<table id ="rti_table" class="table tablesorter table-striped table-bordered table-hover" border="1"><thead class="thead-dark"><tr> 
+<th scope="col" style="width:80px; font-size:125%; text-align:center">Local ID</th><th scope="col" style="width:90px; font-size:125%; text-align:center">FLEID</th> <th scope="col"style="width:170px; font-size:125%; text-align:center">{%if lang=='en'%}Student Name{%else%}Nombre de Estudiante{%endif%}</th>
+ <th scope="col" class="filter-select" style="width:70px; font-size:125%; text-align:center">{%if lang=='en'%}Race{%else%}Raza{%endif%}</th> <th scope="col" class="filter-select" style="width:60px; font-size:125%; text-align:center">{%if lang=='en'%}Grade{%else%}Grado{%endif%}</th>
+<th scope="col" class="filter-select" style="width:50px; font-size:125%; text-align:center">{%if lang=='en'%}Tier{%else%}Nivel{%endif%}</th> <th scope="col" class="filter-select" style="width:80px; font-size:125%; text-align:center">{%if lang=='en'%}Status{%else%}Estado{%endif%}</th><th scope="col" class="filter-select" style="width:70px; font-size:125%; text-align:center">{%if lang=='en'%}Gender{%else%}G&#233;nero{%endif%}</th>
+ <th scope="col" class="filter-select" style="width:90px; font-size:125%; text-align:center">{%if lang=='en'%}School{%else%}Escuela{%endif%}</th>
+<th scope="col" style="width:60px; font-size:125%; text-align:center">{%if lang=='en'%}Vision Date{%else%}Fecha de la visi&#243;n{%endif%}</th><th scope="col" style="width:60px; font-size:125%; text-align:center">{%if lang=='en'%}Hearing Date{%else%}Fecha de la audiencia{%endif%}</th></tr></thead>
+<tbody>
+{% for rows in results %}
+{% set rowloop=loop %}
+<tr>
+{% for i in range(1,9)%}
+	{% if i==2 %}
+	<td style="font-size:1rem; text-align:center">{{rows[i+7]}}&nbsp;</td>
+	<td style="font-size:1rem; text-align:center"><a href="{{url_for('student_page', student_id=rows[i-1])}}">&nbsp;{{rows[i]}}</a></td>
+	{% elif i==4 %}
+	<td style="font-size:1rem; text-align:center">{%if rows[i]==0 %}&nbsp;K</td>
+	{%else%}&nbsp;{{rows[i]}}</td>
+	{%endif%}
+	{%else%}
+	<td style="font-size:1rem; text-align:center">&nbsp;{{rows[i]}}</td>
+	{% endif %}
+{% endfor%}
+{%for i in range(18,20)%}{% if vis_hear[rowloop.index-1][i-18] %}<td style="text-align:center">&nbsp;<span style="color:red; font-size:1rem">{{translate(text='Overdue', src='en', dest=['{}'.format(lang)])}}</span>{%else%}<td style="font-size:1rem; text-align:center">&nbsp;{%if rows[i]%}{{rows[i]}}{%else%}{{translate(text='Incomplete', src='en', dest=['{}'.format(lang)])}}{%endif%}{%endif%}</td>{%endfor%}</tr>{%endfor%}</tbody></table></div> {%endif%}
+
+<script>
+$(function() {
+  $("#rti_table").tablesorter({
+    
+    widgets: ["zebra", "filter"],
+    
+    widgetOptions : {
+      zebra : [ "normal-row", "alt-row" ]}
+    });
+});</script>
+
+{% if (results and (fid or rev)) %}
+ <style>table.tablesorter tbody tr.normal-row td {
+background: #d3d3d3;
+  color: #000000;
+}
+table.tablesorter tbody tr.alt-row td {
+background: #F0FFF0;
+  color: #000000;
+}
+table th,td{height:50px}</style>
+
+<script>
+$(document).ready( function () {
+    $('#myFidTable').DataTable({'searching' : false,
+      'order' : [[2,'asc']],
+      'orderable': true,
+      'columns' : [ {'orderable' : false}, {'orderable' : false}, {'orderable' : true}, {'orderable' : false}, {'orderable' : true}, {'orderable' : false}, {'orderable' : false}, {'orderable' : false}, {'orderable' : false}, {'orderable' : false}, {'orderable' : false}]
+ });
+} );
+</script>
+<div style="width:98%; max-width:1550px; min-width:1400px; padding-top:1em; margin-left:auto; margin-right:auto; max-height:800px; overflow-y:auto">
+	<div style="width:100%; background-color:white; padding-bottom:1em; text-align:center;  border:2px solid black; margin-bottom:0.25em"><div><h1 style="font-size: 35px">Plans with Upcoming or Incomplete {%if fid%}Fidelity Assessments{%else%}Reviews{%endif%}</h1></div>
+		<div class="columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.5em">
+			<div class="cols" style="width:60%; text-align:center; font-size:16px"> This is a list of all plans where the {%if fid%}Fidelity Assessment{%else%}Review{%endif%} Completed dates have not been entered<br>
+								or are nearing being overdue. Click on Student name to go to plan.</div>
+			<div class= "cols" style="width:40%; padding-left:0.5em"><input type="checkbox" id="not_entered"/>&ensp;<span style="font-size:16px" >Hide plans where an anticipated {%if fid%}fidelity assessment{%else%}review{%endif%} date is not entered.</span></div>
+		</div>	
+	</div>
+<table id ="myFidTable" class="display" >
+  <thead>
+    <tr>
+      <th style="text-align:center; font-size:16px">Student ID</th>
+      <th style="text-align:center; font-size:16px">Student Name</th>
+      <th style="text-align:center; font-size:16px">School</th>
+      <th style="text-align:center; font-size:16px">Grade</th>
+      <th style="text-align:center; font-size:16px">Tier</th>
+      <th style="text-align:center; font-size:16px">Race</th>
+      <th style="text-align:center; font-size:16px">Plan Area</th>
+      <th style="text-align:center; font-size:16px">Intervention Level</th>
+      {%if fid%}<th style="text-align:center; font-size:16px">Fidelity Status</th>
+      <th style="text-align:center; font-size:16px">Fidelity Complete Date</th>
+      <th style="text-align:center; font-size:16px">Anticipated Fidelity Assessment</th>{%else%}
+      <th style="text-align:center; font-size:16px">Review Status</th>
+      <th style="text-align:center; font-size:16px">Review Complete Date</th>
+      <th style="text-align:center; font-size:16px">Anticipated Review</th>{%endif%}
+      
+    </tr>
+  </thead>
+  <tbody>
+			{%for plan, student, overdue in results%}
+<tr>
+<td style="text-align:center; font-size:14px">&nbsp;{{student.__dict__['student_id']}}&nbsp;</td>
+<td style="text-align:center; font-size:14px">&nbsp;<a href="{{url_for('student_page', student_id=student.__dict__['student_id'])}}">{{student.__dict__['student_name']}}</a>&nbsp;</td>
+<td style="text-align:center; font-size:14px">&nbsp;{{student.__dict__['school']}}&nbsp;</td>
+<td style="text-align:center; font-size:14px">{%if student.__dict__['grade']==0%}&nbsp;K{%else%}{{student.__dict__['grade']}}&nbsp;{%endif%}</td>
+<td style="text-align:center; font-size:14px">&nbsp;{{student.__dict__['tiers']}}&nbsp;</td>
+<td style="text-align:center; font-size:14px">&nbsp;{{student.__dict__['race']}}&nbsp;</td>
+<td style="text-align:center; font-size:14px">&nbsp;<a href="/plan/{{student.__dict__['student_name']}}/{{student.__dict__['student_id']}}/{{plan.__dict__['intervention_area']}}/{{plan.__dict__['id']}}">{{plan.__dict__['intervention_area']}}</td></a>&nbsp;</td>
+<td style="text-align:center; font-size:14px">&nbsp;{{plan.__dict__['intervention_level']}}&nbsp;</td>
+{%if fid%}<td style="text-align:center; font-size:14px">{%if plan.__dict__['fid_complete']%}&nbsp;Completed{%else%}<span style="color:red">Incomplete</span>{%endif%}&nbsp;</td>
+<td style="text-align:center; font-size:14px">{%if plan.__dict__['fid_completed']%}&nbsp;{%if overdue[0]%}<span style="color:red">Overdue</span>{%else%}{{plan.__dict__['fid_completed']}}{%endif%}{%else%}<span style="color:red">No Date</span>{%endif%}&nbsp;</td>
+<td style="text-align:center; font-size:14px">{%if not plan.__dict__['anticipated_fidelity_assessment']%}&nbsp;<span class="not_enter" style="color:red">Not Entered</span>{%else%}{{plan.__dict__['anticipated_fidelity_assessment']}}{%endif%}</td>{%else%}
+<td style="text-align:center; font-size:14px">{%if plan.__dict__['rev_complete']%}&nbsp;Completed{%else%}<span style="color:red">Incomplete</span>{%endif%}&nbsp;</td>
+<td style="text-align:center; font-size:14px">{%if plan.__dict__['rev_completed']%}&nbsp;{%if overdue[1]%}<span style="color:red">Overdue</span>{%else%}{{plan.__dict__['rev_completed']}}{%endif%}{%else%}<span style="color:red">No Date</span>{%endif%}&nbsp;</td>
+<td style="text-align:center; font-size:14px">{%if not plan.__dict__['anticipated_review_date']%}&nbsp;<span class="not_enter" style="color:red">Not Entered</span>{%else%}{{plan.__dict__['anticipated_review_date']}}{%endif%}</td>{%endif%}
+
+</tr>
+{%endfor%}
+</tbody></table></div>
+
+<script>
+$('#not_entered').on('click', function(){$('.not_enter').parent().parent('tr').toggle();
+})
+</script>
+
+{%endif%}
+
+<script>
+	$(function(){
+		$('.ms-options-wrap').children('button').css('height' , '39px');
+		$('.ms-options-wrap').children().children('span').css('font-size' , '120%');
+		$('.dataTables_length').children('label').css("font-size", "16px");
+    	$('.dataTables_length').children('label').children('select').css("font-size", "14px");
+	});
+</script>
+
+{% endblock %}

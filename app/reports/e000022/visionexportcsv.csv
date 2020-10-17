@@ -1,0 +1,14 @@
+,student_id,student_name,grade,status,school,rti_vision,rti_vision_date
+0,006982,"Aaron, Henry",9,Active,John Adams High School,Pass,2018-11-22
+1,009039,"Adams, Chang",9,Active,Thomas Jefferson High School,Pass,2019-04-08
+2,002411,"Blanco, Keli",1,Watch,Andrew Jackson Middle School,Pass,2019-11-03
+3,003458,"Clark, Dustin",1,Watch,Franklin Pierce Academy (K-8),,
+4,001124,"Brown, Allison",10,Monitor,James Monroe High School,,
+5,007235,"Little, Tabitha",10,Referred,Thomas Jefferson High School,Fail,2019-02-05
+6,011510,"Houck, Camden",12,Active,John Adams High School,Pass,2019-06-19
+7,001798,"Bellwoar, Nate",11,Active,Thomas Jefferson High School,,
+8,100110,"Reed, Landis",12,Active,John Adams High School,,
+9,100125,"Rousseau, Livia",12,Watch,Thomas Jefferson High School,,
+10,100210,"Wade, Jameson",2,Active,John Tyler Elementary School,Pass,
+11,100235,"Wynn, Anna",3,Active,Martin van Buren Elementary School,Pass,
+12,100342,"Borstelmann, Bella",7,Staffed,James Madison Middle School,,

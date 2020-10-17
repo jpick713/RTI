@@ -1,0 +1,4 @@
+,student_id,student_name,school,grade,status,staffed_date,staffed_area
+2,100539,"Watkins, Emorie",Zachary Taylor Academy (K-8),3.0,Staffed-Active,2020-09-20,Language
+1,100342,"Borstelmann, Bella",James Madison Middle School,7.0,Staffed,2020-09-08,Language
+0,100539,"Watkins, Emorie",Zachary Taylor Academy (K-8),3.0,Staffed-Active,2020-08-15,Academic

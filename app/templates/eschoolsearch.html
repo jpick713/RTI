@@ -1,0 +1,213 @@
+{%extends "base2.html" %}
+
+{%block content%}
+ 
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+<style>
+  th, td {font-size:16px}
+</style>
+
+
+<div class="container" style="background-color: #50C878; width:95%; max-width:1600px; min-width:1400px; padding-top:0.5em; margin-top:0.5em; font-size: 150%;">
+  <div class="columns" style="display:flex; justify-content:flex-start; align-items:center">
+    <div class="cols" style="width:20%;; text-align:center">
+      <button class="button btn-lg btn-secondary" id="exit" style="width:50%; font-size:115%">Back</button>
+    </div>
+    <div class= "cols" style="width:60%; text-align:center; color:white">
+      <h1 style="font-size:200%;">New Student Search</h1>
+    </div>
+    <div class="cols" style="width:20%"></div>
+  </div>
+  <form action="" method="post">
+  <div class="columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+    {%if user.access_level==1%}
+    <div class="cols" style= "width:50%; text-align:right; color:white"><b>School:&ensp;</b>
+    </div>
+    {%else%}
+    <div class="cols" style= "width:35%; text-align:right; color:white"><b>School (required field):&ensp;</b>
+    </div>
+    {%endif%}
+    <div class="cols" style="width:30%">
+      {%if user.access_level==1%}<span style="color:white"><b>{{user.school}}</b></span>
+      {%endif%}
+	{% if user.access_level==2 %} 
+		    <select name="school" style="font-size:105%; width:100%">
+        <option disabled selected>--Select School (required)</option>
+        <option class="school" value="{{user.school}}">&ensp;{{user.school}}</option>
+			  {% if user.secondary %}
+        <option class="school" value="{{user.secondary}}">&ensp;{{user.secondary}}</option>
+			  {% endif %}
+			  {% if user.third %}
+        <option class="school" value="{{user.third}}">&ensp;{{user.third}}</option>
+			  {% endif %}
+			  {% if user.fourth %}
+        <option class="school" value="{{user.fourth}}">&ensp;{{user.fourth}}</option>
+			  {% endif %}
+        </select>
+        {%endif%}
+    {%if user.access_level==3 %}
+    <select name="school" style="font-size:105%; width:100%">
+      <option disabled selected>--Select School (required)</option>
+      {%for school in all_schools%}
+      <option class="school" value="{{school.school_name}}">&ensp;{{school.school_name}}</option>
+      {%endfor%}
+    </select>{% endif %}
+    </div>
+    {%if user.access_level==1%}
+    <div class="cols" style="width:20%"></div>
+    {%else%}
+    <div class="cols" style="width:35%"></div>
+    {%endif%}
+  </div>
+  <div class="columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:1.25em">
+    <div class="cols" style="width:9%"></div>
+    <div class="cols" style="width:7%; text-align:right; color:white">
+      <b>Local ID:&ensp;</b>
+    </div>
+    <div class="cols" style="width:10%">
+      <input type="text" name="student_id" style="width:100%" placeholder="Enter Student ID">
+    </div>
+    <div class="cols" style="width:7%; text-align:right; color:white">
+      <b>FLEID:&ensp;</b>
+    </div>
+    <div class="cols" style="width:10%">
+      <input type="text" name="fleid" style="width:100%" placeholder="Enter FLEID">
+    </div>
+    <div class="cols" style="width:10%; text-align:right; color:white">
+      <b>First Name:&ensp;</b>
+    </div>
+    <div class="cols" style="width:12%">
+      <input type="text" name="first" style="width:100%">
+    </div>
+    <div class="cols" style="width:10%; text-align:right; color:white">
+      <b>Last Name:&ensp;</b>
+    </div>
+    <div class="cols" style="width:12%">
+      <input type="text" name="last" style="width:100%">
+    </div>
+  </div>
+  <div class="columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:1em; padding-bottom:1em">
+    <div class="cols" style="width:27.5%; text-align:right; padding-right:0.2em;">
+      <input type="checkbox" name="exact">
+    </div>
+    <div class="cols" style="width:15%; color:white; padding-left:0.2em; font-size:115%">
+      <b>Exact Matches Only</b>
+  </div>
+    <div class="cols" style="width:15%; text-align:center">
+      <button type="Submit" class="button btn-lg btn-info" id="search" style="width:90%; font-size:115%">Run Search</button>
+    </div>
+    <div class="cols" style="width:15%; text-align:center">
+      <button type="Reset" class="button btn-lg btn-secondary" id="reset" style="width:90%; font-size:115%">Clear Fields</button>
+  </div>
+  </div>
+  </form>
+</div>
+
+
+{% if results %}
+<script>
+$(document).ready( function () {
+    $('#myTable').DataTable(
+      {'searching' : false,
+      'order' : [[2,'asc']],
+      'orderable': true,
+      'columns' : [ {'orderable' : false}, {'orderable' : false}, {'orderable' : true}, {'orderable' : false}, {'orderable' : true}, {'orderable' : false}, {'orderable' : false}, {'orderable' : false}]
+ });
+});
+
+
+</script>
+
+<div class="container" style="width:85%; max-width:1600px; min-width:1400px; padding-top:0.75em; margin-top:0.75em; font-size: 120%;">
+<table id ="myTable" class="display" >
+  <thead>
+    <tr>
+      <th>Student ID</th>
+      <th>FLEID</th>
+      <th>Name</th>
+      <th>School</th>
+      <th>Grade</th>
+      <th>Gender</th>
+      <th>Race</th>
+      <th>Birth-Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+		{%for result in results%}
+<tr>
+<td>&nbsp;{{result['student_id']}}&nbsp;</td>
+<td>&nbsp;{{result['fle_id']}}&nbsp;</td>
+<td>&nbsp;<a href="{{url_for('new_student', student_id=result['student_id'])}}">{{result['student_name']}}</a>&nbsp;</td>
+<td>&nbsp;{{result['school']}}&nbsp;</td>
+<td data-order={{result['grade']}}>&nbsp;{%if result['grade']==0%}K{%else%}{{result['grade']}}{%endif%}&nbsp;</td>
+<td>&nbsp;{{result['gender']}}&nbsp;</td>
+<td>&nbsp;{{result['race']}}&nbsp;</td>
+<td>&nbsp;{{result['date_birth']}}&nbsp;</td>
+</tr>
+{%endfor%}
+</tbody></table>
+</div>
+{% endif %}
+
+<script>
+
+function sortTable(index) {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("myTable");
+  switching = true;
+  
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[index];
+      y = rows[i + 1].getElementsByTagName("TD")[index];
+      //check if the two rows should switch place:
+      if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+        //if so, mark as a switch and break the loop:
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}
+
+$('#exit').on("click", function(){
+  event.preventDefault();
+  window.location.href="{{url_for('RTI')}}"
+})
+
+</script>
+<script>
+  $(function(){
+    $('.dataTables_length').children('label').css("font-size", "16px");
+    $('.dataTables_length').children('label').children('select').css("font-size", "14px");
+  })
+</script>
+
+
+
+{% endblock %}
+					 

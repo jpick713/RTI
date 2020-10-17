@@ -1,0 +1,22 @@
+,student_name,intervention_area,intervention_level,plan_date,race,gender,tier,school,grade
+0,"Aaron, Henry",Reading Comprehension,2,2020-01-13,Black,Male,3,John Adams High School,9
+1,"Aaron, Henry",Mathematics Problem Solving,2,2020-02-17,Black,Male,3,John Adams High School,9
+2,"Aaron, Henry",Mathematics Calculation,3,2020-03-01,Black,Male,3,John Adams High School,9
+3,"Adams, Chang",Language - Phonological Processing,2,2020-04-10,Asian,Male,2,Thomas Jefferson High School,9
+4,"Adams, Chang",Reading Comprehension,2,2020-03-05,Asian,Male,2,Thomas Jefferson High School,9
+5,"Adams, Chang",Behavior - Excessive fears/phobias and/or worrying,2,2020-04-21,Asian,Male,2,Thomas Jefferson High School,9
+6,"Houck, Camden",Written Expression,3,2020-04-13,White,Female,2,John Adams High School,12
+7,"Rose, Larkyn",Reading - Basic Reading Skills,3,2020-04-21,Hispanic,Female,2,John Adams High School,11
+8,"Aaron, Henry",Behavior - Physical Aggression,2,2020-05-02,Black,Male,3,John Adams High School,9
+9,"Wynn, Anna",Reading Comprehension,2,2020-06-03,White,Female,2,Martin van Buren Elementary School,3
+10,"Wynn, Anna",Language - Phonological Processing,2,2020-06-09,White,Female,2,Martin van Buren Elementary School,3
+11,"Wynn, Anna",Behavior - Excessive fears/phobias and/or worrying,2,2020-06-09,White,Female,2,Martin van Buren Elementary School,3
+12,"Wynn, Anna",Oral Expression,2,2020-06-09,White,Female,2,Martin van Buren Elementary School,3
+13,"Aaron, Henry",Oral Expression,2,2020-06-08,Black,Male,3,John Adams High School,9
+14,"Aaron, Henry",Reading - Basic Reading Skills,3,2020-08-18,Black,Male,3,John Adams High School,9
+15,"Wynn, Anna",Language - Social Interaction,2,2020-06-25,White,Female,2,Martin van Buren Elementary School,3
+16,"Wynn, Anna",Behavior - Non-compliance,2,2020-06-25,White,Female,2,Martin van Buren Elementary School,3
+17,"Wynn, Anna",Reading - Basic Reading Skills,2,2020-06-25,White,Female,2,Martin van Buren Elementary School,3
+18,"Houck, Camden",Mathematics Calculation,2,2020-06-26,White,Female,2,John Adams High School,12
+19,"Wade, Jameson",Reading - Reading Fluency Skills,2,2020-07-06,White,Male,2,John Tyler Elementary School,2
+20,"Brown, Allison",Reading - Basic Reading Skills,2,2020-07-09,White,Female,2,James Monroe High School,10

@@ -1,0 +1,56 @@
+{%extends "base2.html" %}
+
+{%block content%}
+<div class="container" style="background-color:gainsboro; width:95%; max-width:1230px; min-width:980px">
+	<div class="columns" style="display:flex; text-align:center">
+		<div class="col" style="width: 100%"><h1>Build a Monitoring Plan</h1></div>
+	</div>
+	<div class="columns" style="display:flex; text-align:center; padding-top:1em; padding-bottom:4em">
+		<div class="col" style="width:100%; font-size:1.25em">
+		This will build out a progress monitoring test plan, to take place over a period of time.
+		</div>
+	</div>
+
+	<div class="columns" style="display:flex; text-align:center; padding-bottom:2em">
+		<div class="col" style="width:30%; font-size:1.25em; text-align:right">
+		<p>Student Name</p>
+		{{student.student_name}}
+		</div>
+		<div class="col" style="width:30%; font-size:1.25em; text-align:center">
+		<p>Plan Level</p>
+		{{plan.intervention_level}}
+		</div>
+		<div class="col" style="width:30%; font-size:1.25em">
+		<p>Area of Intervention</p>
+		{{plan.intervention_area}}
+		</div>
+	</div>
+<form id="build_monitoring_tests" action="" method="post">
+	<div class="columns" style="display:flex; text-align:center; padding-bottom:2em">
+		
+		<div class="col" style="width:40%; font-size:1.25em; text-align:right">
+		<p>When will monitoring begin?</p>
+		<p style="padding-bottom:0.25em">Testing Frequency</p>
+		<p style="padding-bottom:1.75em">Number of assessments to be given</p>
+		<p>What is the initial Goal for the Student?</p>
+		<p style="padding-top:0.5em">What is the final goal?</p>
+		</div>
+		<div class="col" style="width:40%; font-size:1.25em; text-align:left; padding-left:1em">
+		<p><input type="date" name="monitor_begin" style="width:50%" required />&ensp;<span style="font-size 200%; color:red">*</span></p>
+		<p><select name="monitor_test_frequency" style="width:50%">
+			<option value="Weekly">Weekly</option>
+			<option value="Biweekly">Biweekly</option></select>&ensp;<span style="font-size 200%; color:red">*</span></p>
+		<p style="padding-bottom:1.25em"><input type="number" min="1" max="41" name="number_of_tests_given" style="width:50%" placeholder="number between 1-41" required />&ensp;<span style="font-size 200%; color:red">*</span></p>
+		<p><input type="text" name="initial_goal" style="width:50%" placeholder="(Score or Pct)"/>&emsp;</p>
+		<p><input type="text" name="final_goal" style="width:50%" placeholder="(Score or Pct)" required />&ensp;<span style="font-size 200%; color:red">*</span></p>
+		</div>
+		</form>
+	</div>
+
+	<div class="columns" style="display:flex; justify-content:space-evenly; padding-bottom:0.5em">
+		<div class="col" style="width: 45%; text-align:right"><button type="Submit" id="save_test_plan" form="build_monitoring_tests" class="btn btn-primary btn-lg">Build Testing Plan</button></div>
+		<div class="col" style="width: 35%; text-align:center; padding-left:1em"><button id="close_test_plan" onclick="window.location.href='/plan/{{student.student_name}}/{{student.student_id}}/{{plan.intervention_area}}/{{plan.id}}'" class="btn btn-secondary btn-lg">Cancel</button></div>
+		<p>&ensp;<span style="font-size 200%; color:red">*</span> <span style="font-size:130%">signifies required field</span></p>
+	</div>
+</div>
+{%endblock%}

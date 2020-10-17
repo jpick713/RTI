@@ -1,0 +1,2225 @@
+{%extends "base2.html" %}
+
+{%block content%}
+ 
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.structure.min.css">
+<link rel="stylesheet" href="/static/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css">
+<script src="/static/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<script src="/static/jasonday-printThis-0aa7434/printThis.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<style>
+	li.active {background-color: rgba(80,200,120,0.75);
+				}
+</style>
+<div style="width:40%; margin-left:auto; margin-right:auto; min-width:1500px; max-width:1700px; text-align:center"><h3>Edit Student info for {{students.student_name.split(',')[1]}} {{students.student_name.split(',')[0]}}</h3></div>
+
+<div class="container" style="background-color:#50C878; width:97%; max-width:1700px; min-width:1500px;  padding-top:0.5em; margin-top:0.5em; margin-left:auto; margin-right:auto; padding-bottom:1em">
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.5em; align-items:center">
+		<div class="cols" style="width:40%; text-align:center">
+			<h2 style="color:white"><b>RtI/MTSS Student Dashboard</b></h2>
+		</div>
+		<div class="cols" style="width:15%; text-align:center">{%if user.access_level==3%} <button class="btn btn-md btn-danger" id="delete_student" style="width:90%"><span style="font-size:110%">Delete&nbsp;Student</span></button> {%endif%}</div>
+		<div class="cols" style="width:20%; text-align:center">{%if plans%}<button class="btn btn-md btn-secondary" style="width:85%" onclick="window.location.href='/RTI/Tracking/{{students.student_name}}/{{students.student_id}}'"><span style="font-size:110%">Student Tracking Sheet</span></button>{%endif%}</div>
+		<div class="cols" style="width:20%; text-align:center"><button style="width:85%" class="btn btn-md btn-secondary" id="close_to_rti"><span style="font-size:110%;  text-align:center">Return to Student Search</span></button></div>
+    </div>
+
+<input type="hidden" id="store_vision" {%if students.rti_vision%}value={{students.rti_vision}}{%endif%} />
+<input type="hidden" id="store_hearing" {%if students.rti_hearing%}value={{students.rti_hearing}}{%endif%} />
+<input type="hidden" id="store_language" {%if students.rti_language%}value={{students.rti_language}}{%endif%} /> 
+<input type="hidden" id="academic_consent_date_prev" {%if students.academic_consent_date%}value="{{students.academic_consent_date}}"{%endif%} />
+<input type="hidden" id="academic_staffed_date_prev" {%if students.staffed_date_academic%}value="{{students.staffed_date_academic}}"{%endif%} />
+<input type="hidden" id="behavior_consent_date_prev" {%if students.behavior_consent_date%}value="{{students.behavior_consent_date}}"{%endif%} />
+<input type="hidden" id="behavior_staffed_date_prev" {%if students.staffed_date_behavior%}value="{{students.staffed_date_behavior}}"{%endif%} />
+<input type="hidden" id="language_consent_date_prev" {%if students.language_consent_date%}value="{{students.language_consent_date}}"{%endif%} />
+<input type="hidden" id="language_staffed_date_prev" {%if students.staffed_date_language%}value="{{students.staffed_date_language}}"{%endif%} />
+
+  <form id="student_rti_info" action="" method="post" novalidate>	
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1em; align-items:center">
+		<div class="cols" style="width:8%; text-align:right; font-size:125%; color:white">
+			<b>Student ID:</b>
+		</div>
+		<div class="cols" style="width:5%; text-align:left; font-size:125%; padding-left:0.5em">
+			<input type="text" name="student_id" style="width:100%; background-color:gainsboro;" readonly value="{{students.student_id}}" />
+		</div>
+		<div class="cols" style="width:10%; text-align:right; font-size:125%; color:white">
+			<b>Student Name:</b>
+		</div>
+		<div class="cols" style="width:20%; text-align:left; font-size:125%; padding-left:0.5em">
+			<input type="text" style="width:100%; background-color:gainsboro" readonly name="student_name" value="{{students.student_name.split(',')[1]}} {{students.student_name.split(',')[0]}}" />
+		</div>
+		<div class="cols" style="width:7%; text-align:right; font-size:125%; color:white">
+			<b>FLEID:</b>
+		</div>
+		<div class="cols" style="width:12%; text-align:left; font-size:125%; padding-left:0.5em">
+			<input type="text" style="width:100%; background-color:gainsboro" name="fleid" value="{{students.fle_id}}" readonly />
+		</div>
+		<div class="cols" style="width:10%; text-align:right; font-size:125%; color:white">
+			<b>Birth Date:</b>
+		</div>
+		<div class="cols" style="width:10%; text-align:left; font-size:125%; padding-left:0.5em">
+			<input type="date" style="background-color:gainsboro; width:100%" value="{{students.date_birth}}" readonly />
+		</div>
+		<div class="cols" style="width:6%; text-align:right; font-size:125%; color:white">
+			<b>Grade:</b>
+		</div>
+		<div class="cols" style="width:5%; text-align:left; font-size:125%; padding-left:0.5em">
+			<input type="text" style="width:100%; background-color:gainsboro" readonly value="{%if students.grade==0%}K{%else%}{{students.grade}}{%endif%}" />
+		</div>
+	</div>
+</div>
+    
+<div style="padding-top:0.5em; padding-bottom: 0.5em">
+  <ul class="nav nav-pills center-pills" style="display:flex; justify-content:center; align-items:center">
+    <a class="tab" href="#"><li id="rti" class="active" style="border: 2px solid blue; width:175px; padding-left:2px; padding-right:2px; text-align:center; font-size:150%"> <b>&nbsp;Student Info&nbsp;</b></li></a>
+    <a class = "tab" href="#"><li id="plan" style="border: 2px solid blue; width:175px; padding-left:2px; padding-right:2px; text-align:center; font-size:150%"> &nbsp;<b>Student Plans&nbsp;</b></li></a>
+    <a class= "tab" href="#"><li id="comment" style="border: 2px solid blue; width:175px; padding-left:2px; padding-right:2px; text-align:center; font-size:150%"> &nbsp;<b>Meeting Notes&nbsp;</b></li></a>
+	<a class= "tab" href="#"><li id="contact_log" style="border: 2px solid blue; width:185px; padding-left:2px; padding-right:2px; text-align:center; font-size:150%"> &nbsp;<b>Parent Contact Log</b></li></a>
+	<a class= "tab" href="#"><li id="academic_forms" style="border: 2px solid blue; width:175px; padding-left:2px; padding-right:2px; text-align:center; font-size:150%"> &nbsp;<b>Forms&nbsp;</b></li></a>
+    <!--<a class= "tab" href="#"><li id="change" style="border: 2px solid blue; width:175px; padding-left:2px; padding-right:2px; text-align:center; font-size:150%"> &nbsp;<b>Change History&nbsp;</b></li></a>-->
+    </ul>
+</div>
+
+<div class="container" id="demo" style="width:98%; max-width:1700px; min-width:1500px; border: 2px black solid; margin-top:0.25em; padding-bottom:1em; margin-bottom:1em">
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.5em; align-items:center">
+		<div class="cols" style="width:15%; text-align:right; font-size:125%">
+			<b>School:</b>
+		</div>
+		<div class="cols" style="width:24%; text-align:left; font-size:125%; padding-left:0.5em">
+				<select class="trigger_save" id="school_list" name="school_change" style="width:100%; background-color:beige">
+					{%for school in all_schools%}
+					<option value="{{school.school_name}}" {% if students.school==school.school_name%}selected{%endif%}>{{school.school_name}}</option>
+					{%endfor%}
+				</select>
+		</div>
+		<div class="cols" style="width:6%; text-align:right; font-size:125%">
+			<b>Status:</b>
+		</div>
+		<div class="cols" style="width:10%; text-align:left; font-size:125%; padding-left:0.5em">
+			<select class="trigger_save" id ="status" name="status" style="width:100%; background-color:beige">
+				<option value="Active" {%if students.status=='Active'%}selected{%endif%}>Active</option>
+				<option value="Inactive" {%if students.status=='Inactive'%}selected{%endif%}>Inactive</option>
+				<option value="Monitor" {%if students.status=='Monitor'%}selected{%endif%}>Monitor</option>
+				<option value="Referred" {%if students.status=='Referred'%}selected{%endif%}>Referred</option>
+				<option value="Staffed" {%if students.status=='Staffed'%}selected{%endif%}>Staffed</option>
+				<option value="Staffed-Active" {%if students.status=='Staffed-Active'%}selected{%endif%}>Staffed-Active</option>
+				<option value="Watch" {%if students.status=='Watch'%}selected{%endif%}>Watch</option>
+    		</select>
+		</div>
+		<div class="cols" style="width:18%; text-align:right; font-size:125%">
+			<b>Student Tier:</b>
+		</div>
+		<div class="cols" style="width:5%; text-align:left; font-size:125%; padding-left:0.5em">
+			<select class="trigger_save" id="tier" name="tier" style="width:100%; background-color:beige">
+      				<option value="1" {% if students.tiers==1%} selected="selected"{%endif%}>1</option>
+       				<option value="2" {% if students.tiers==2%} selected="selected"{%endif%}>2</option>
+      				<option value="3" {% if students.tiers==3%} selected="selected"{%endif%}>3</option>
+			</select>	
+		</div>
+		<div class="cols" style="width:20%; text-align:center"><button id="save" class="btn btn-md btn-primary" style="width:60%" type="submit" form="student_rti_info" onclick="remove_save()"><span style="font-size:110%; text-align:center">Save Student Info</span></button>
+		</div>
+	</div>
+
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em; align-items:center">
+		<div class="cols" style="width:15%; text-align:right; font-size:125%">
+			<b>Does student have a 504 plan?</b>
+		</div>
+		<div class="cols" style="width:5%; padding-left:0.5em; font-size:125%">
+			<select class="trigger_save" style="width:100%; background-color:beige" id="student_504" name="student_504">
+				<option></option>
+				<option value='Yes' {%if students.student_504=='Yes'%}selected{%endif%}>Yes</option>
+				<option value='No' {%if students.student_504=='No'%}selected{%endif%}>No</option>
+			</select>
+		</div>
+		<div class="cols" style="width:14%; text-align:right; font-size:125%">
+			<b>Does student have an IEP?</b>
+		</div>
+		<div class="cols" style="width:5%; padding-left:0.5em; font-size:125%">
+			<select class="trigger_save" style="width:100%; background-color:beige" id="ese_student" name="ese_student">
+				<option value='Yes' {%if students.ese_student=='Yes'%}selected{%endif%}>Yes</option>
+				<option value='No' {%if students.ese_student=='No'%}selected{%endif%}>No</option>
+			</select>
+		</div>
+		<div class="cols" style="width:34%; text-align:right; font-size:125%">
+			<b>If student has IEP, does student have reading goal/service on the IEP?</b>
+		</div>
+		<div class="cols" style="width:5%; padding-left:0.5em; font-size:125%">
+			<select class="trigger_save" style="width:100%; background-color:beige" id="ese_reading_goal" name="ese_reading_goal">
+				<option value='Yes' {%if students.ese_reading_goal=='Yes' and students.ese_student=='Yes'%}selected{%endif%}>Yes</option>
+				<option value='No' {%if students.ese_reading_goal=='No' or students.ese_student=='No' or students.ese_student==""%}selected{%endif%}>No</option>
+			</select>
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em; align-items:center">
+		<div class="cols" style="width:15%; text-align:right; font-size:125%">
+			<b>Initial Data Chat Notes:</b>
+		</div>
+		<div class="cols" style="width:79%; padding-left:0.5em">
+			<textarea name="data_chat" class="trigger_save" style="width:100%; background-color:beige" {%if students.data_chat%}value="{{students.data_chat}}"{%endif%} rows=3>
+			</textarea>
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1em; align-items:center">
+		<div class="cols" style="width:30%; border-right: solid 3px black">
+			<div class="mini-container" style="width:100%">
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+					<div class="mini-cols" style="width:100%; text-align:center">
+						<h4><u>Vision Data</u></h4>					
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Screening Result:</b>
+					</div>
+					<div class="mini-cols" style="width:40%; text-align:left; padding-left:0.5em; font-size:125%">
+						<select class="trigger_save" style="width:100%; height:1.7rem; background-color:beige {%if students.rti_vision=='Fail'%};border:4px solid red{%endif%}" id="vision" name="rti_vision">
+							<option {%if students.tiers==3%}disabled{%endif%}></option>
+							<option value="Pass" {% if students.rti_vision=='Pass'%}selected{% endif%}>Pass</option>
+							<option value="Fail" {% if students.rti_vision=='Fail'%}selected{% endif%}>Fail</option>
+						</select>
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Screening Date:</b>
+					</div>
+					<div class="mini-cols" style="width:40%; text-align:left; padding-left:0.5em; font-size:125%">
+						<input type="date" class="trigger_save" id="vision_date" name="rti_vision_date" {% if students.rti_vision_date%} value="{{students.rti_vision_date}}"{%endif%}
+						{% if students.rti_vision=='Pass' or students.rti_vision=='Fail' %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Glasses/Contacts:</b>
+					</div>
+					<div class="mini-cols" style="width:40%; text-align:left; padding-left:0.5em; font-size:125%">
+						<select class="trigger_save" style="width:100%; height:1.7rem; background-color:beige" name="glasses_contacts">
+							<option></option>
+							<option value="Yes" {%if students.glasses_contacts=='Yes'%}selected{%endif%}>Yes</option>
+							<option value="Yes" {%if students.glasses_contacts=='No'%}selected{%endif%}>No</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="cols" style="width:40%; border-right: solid 3px black">
+			<div class="mini-container" style="width:100%">
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+					<div class="mini-cols" style="width:100%; text-align:center">
+						<h4><u>Hearing Data</u></h4>					
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Screening Result:</b>
+					</div>
+					<div class="mini-cols" style="width:30%; text-align:left; padding-left:0.5em; font-size:125%">
+						<select class="trigger_save" style="width:100%; height:1.7rem; background-color:beige {%if students.rti_hearing=='Fail'%};border:4px solid red{%endif%}" id="hearing" name="rti_hearing">
+							<option {%if students.tiers==3%}disabled{%endif%}></option>
+							<option value="Pass" {% if students.rti_hearing=='Pass'%}selected{% endif%}>Pass</option>
+							<option value="Fail" {% if students.rti_hearing=='Fail'%}selected{% endif%}>Fail</option>
+						</select>
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Screening Date:</b>
+					</div>
+					<div class="mini-cols" style="width:30%; text-align:left; padding-left:0.5em; font-size:125%">
+						<input type="date" class="trigger_save" id="hearing_date" name="rti_hearing_date" {% if students.rti_hearing_date%} value="{{students.rti_hearing_date}}"{%endif%}
+						{% if students.rti_hearing=='Pass' or students.rti_hearing=='Fail' %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Hearing Aids/Cochlear Implants:</b>
+					</div>
+					<div class="mini-cols" style="width:30%; text-align:left; padding-left:0.5em; font-size:125%">
+						<select class="trigger_save" style="width:100%; height:1.7rem; background-color:beige" name="glasses_contacts">
+							<option></option>
+							<option value="Yes" {%if students.hearing_aids=='Yes'%}selected{%endif%}>Yes</option>
+							<option value="Yes" {%if students.hearing_aids=='No'%}selected{%endif%}>No</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="cols" style="width:30%">
+			<div class="mini-container" style="width:100%">
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+					<div class="mini-cols" style="width:100%; text-align:center">
+						<h4><u>Language Data</u></h4>					
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Screening Result:</b>
+					</div>
+					<div class="mini-cols" style="width:40%; text-align:left; padding-left:0.5em; font-size:125%">
+						<select class="trigger_save" style="width:100%; height:1.7rem; background-color:beige {%if students.rti_language=='Fail'%};border:4px solid red{%endif%}" id="language" name="rti_language">
+							<option></option>
+							<option value="Pass" {% if students.rti_language=='Pass'%}selected{% endif%}>Pass</option>
+							<option value="Fail" {% if students.rti_language=='Fail'%}selected{% endif%}>Fail</option>
+						</select>
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+						<b>Screening Date:</b>
+					</div>
+					<div class="mini-cols" style="width:40%; text-align:left; padding-left:0.5em; font-size:125%">
+						<input type="date" class="trigger_save" id="language_date" name="rti_language_date" {% if students.rti_language_date%} value="{{students.rti_language_date}}"{%endif%}
+						{% if students.rti_language=='Pass' or students.rti_language=='Fail' %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+					</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+					<div class="mini-cols" style="width:50%; text-align:right; font-size:125%; visibility:hidden">
+						<b>Filler:</b>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-referred" id="referred_checkboxes" style="width:100%; padding-top:5em; font-size:105%; {%if students.status !='Referred' and students.status !='Staffed' and students.status != 'Staffed-Active' %}display:none{%endif%}">
+		<h4 style="text-align:center; margin-right:auto; margin-left:auto"> Referral/Staffed Information </h4>
+		<div class="columns" style="display:flex; justify-content:flex-start; padding-top:0.75em; align-items:center">
+			<div class="cols" style="width:30%; border-right: solid 3px black">
+				<div class="mini-container" style="width:100%">
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+						<div class="mini-cols" style="width:100%; text-align:center">
+							<h4><u>Academic</u></h4>					
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Referred for Specific Learning Disability?</b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="checkbox" class="trigger_save" id="academic_checkbox" name="referred_academic" {% if students.referred_academic%} checked {% endif %} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Referral Date:</b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="academic_referral_date" name="academic_referral_date" {% if students.academic_referral_date%} value="{{students.academic_referral_date}}"{%endif%}
+							{% if students.referred_academic==True %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Consent Date: </b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="academic_consent_date" name="academic_consent_date" {% if students.academic_consent_date %} value="{{students.academic_consent_date}}"{%endif%}
+							{% if students.referred_academic==True and students.academic_referral_date and students.academic_referral_date !="" %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Staffed Date: </b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="staffed_date_academic" name="staffed_date_academic" {% if students.staffed_date_academic %} value="{{students.staffed_date_academic}}"{%endif%}
+							{% if students.academic_consent_date and students.academic_consent_date !="" %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cols" style="width:40%; border-right: solid 3px black">
+				<div class="mini-container" style="width:100%">
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+						<div class="mini-cols" style="width:100%; text-align:center">
+							<h4><u>Behavior</u></h4>					
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Referred for Emotional/Behavioral Disability?</b>
+						</div>
+						<div class="mini-cols" style="width:30%; padding-left:0.5em; font-size:125%">
+							<input type="checkbox" class="trigger_save" id="behavior_checkbox" name="referred_behavior" {% if students.referred_behavior%} checked {% endif %}/>
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Referral Date:</b>
+						</div>
+						<div class="mini-cols" style="width:30%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="behavior_referral_date" name="behavior_referral_date" {% if students.behavior_referral_date%} value="{{students.behavior_referral_date}}"{%endif%}
+							{% if students.referred_behavior==True %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Consent Date: </b>
+						</div>
+						<div class="mini-cols" style="width:30%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="behavior_consent_date" name="behavior_consent_date" {% if students.behavior_consent_date %} value="{{students.behavior_consent_date}}"{%endif%}
+							{% if students.referred_behavior==True and students.behavior_referral_date and students.behavior_referral_date !="" %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Staffed Date: </b>
+						</div>
+						<div class="mini-cols" style="width:30%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="staffed_date_behavior" name="staffed_date_behavior" {% if students.staffed_date_behavior %} value="{{students.staffed_date_behavior}}"{%endif%}
+							{% if students.behavior_consent_date and students.behavior_consent_date !="" %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cols" style="width:30%">
+				<div class="mini-container" style="width:100%">
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+						<div class="mini-cols" style="width:100%; text-align:center">
+							<h4><u>Language</u></h4>					
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Referred for Language Impaired?</b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="checkbox" class="trigger_save" id="language_checkbox" name="referred_language" {% if students.referred_language%} checked {% endif %}/>
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.35em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Referral Date:</b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="language_referral_date" name="language_referral_date" {% if students.language_referral_date%} value="{{students.language_referral_date}}"{%endif%}
+							{% if students.referred_language==True %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Consent Date: </b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="language_consent_date" name="language_consent_date" {% if students.language_consent_date %} value="{{students.language_consent_date}}"{%endif%}
+							{% if students.referred_language==True and students.language_referral_date and students.language_referral_date !="" %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+					<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; padding-top:0.65em">
+						<div class="mini-cols" style="width:50%; text-align:right; font-size:125%">
+							<b>Staffed Date: </b>
+						</div>
+						<div class="mini-cols" style="width:40%; padding-left:0.5em; font-size:125%">
+							<input type="date" class="trigger_save" id="staffed_date_language" name="staffed_date_language" {% if students.staffed_date_language %} value="{{students.staffed_date_language}}"{%endif%}
+							{% if students.language_consent_date and students.language_consent_date !="" %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+	</div>
+	<!--
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.5em; align-items:center">
+		<div class="col" style="width:50%">
+			<div class="mini-container" style="width:100%">
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:0.75em">
+					<div class="mini-cols" style="width:26%; text-align:right; font-size:105%"></div>
+					<div class="mini-cols" style="width:19.5%; text-align:center; padding-left:0.5em; font-size:125% "><b><u>Date</u></b></div>
+					<div class="mini-cols" style="width:12%; text-align:right; font-size:105%"></div>
+					<div class="mini-cols" style="width:12%; text-align:center; padding-left:0.5em; font-size:125%"><b><u>Results</u></b></div>
+					<div class="mini-cols" style="width:19.5%; text-align:center; padding-left:0.5em; font-size:125%"><b><u>Date Assessed</u></b></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+					<div class="mini-cols" style="width:26%; text-align:right; font-size:105%">Peer Comparison</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105% "><input type="date" class="trigger_save" id="comparison" style="width:100%; background-color:beige" name="peer_comparison" {% if students.peer_comparison %}value="{{students.peer_comparison}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:12%; text-align:right; font-size:105%">Vision</div>
+					<div class="mini-cols" style="width:12%; text-align:left; padding-left:0.5em; font-size:105%">
+						<select class="trigger_save" style="width:100%; background-color:beige {%if students.rti_vision=='Fail'%};border:4px solid red{%endif%}" id="vision" name="rti_vision">
+							<option {%if students.tiers==3%}disabled{%endif%}></option>
+							<option value="Pass" {% if students.rti_vision=='Pass'%}selected{% endif%}>Pass</option>
+							<option value="Fail" {% if students.rti_vision=='Fail'%}selected{% endif%}>Fail</option>
+						</select></div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" class="trigger_save" id="vision_date" name="rti_vision_date" {% if students.rti_vision_date%} value="{{students.rti_vision_date}}"{%endif%}
+						{% if students.rti_vision=='Pass' or students.rti_vision=='Fail' %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} /></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:26%; text-align:right; font-size:105%">Report Card Reviewed</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105% "><input type="date" id="reviewed" style="width:100%; background-color:beige" class="trigger_save" name="report_card_reviewed"  {% if students.report_card_reviewed %}value="{{students.report_card_reviewed}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:12%; text-align:right; font-size:105%">Hearing</div>
+					<div class="mini-cols" style="width:12%; text-align:left; padding-left:0.5em; font-size:105%">
+						<select class="trigger_save" style="width:100%; background-color:beige {%if students.rti_hearing=='Fail'%};border:4px solid red{%endif%}" id="hearing" name="rti_hearing">
+							<option {%if students.tiers==3%}disabled{%endif%}></option>
+							<option value="Pass" {% if students.rti_hearing=='Pass'%}selected{% endif%}>Pass</option>
+							<option value="Fail" {% if students.rti_hearing=='Fail'%}selected{% endif%}>Fail</option>
+						</select></div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" class="trigger_save" id="hearing_date" name="rti_hearing_date" {% if students.rti_hearing_date%} value="{{students.rti_hearing_date}}"{%endif%} 
+						{% if students.rti_hearing=='Pass' or students.rti_hearing=='Fail' %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} /></div>
+					
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:26%; text-align:right; font-size:105%">Initial Parent Contact</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105% "><input type="date" class="trigger_save" id="contact" name="initial_parent_contact" style="width:100%; background-color:beige" {% if students.initial_parent_contact%} value="{{students.initial_parent_contact}}"{%endif%} /></div>
+					<div class="mini-cols" style="width:12%; text-align:right; font-size:105%">Language</div>
+					<div class="mini-cols" style="width:12%; text-align:left; padding-left:0.5em; font-size:105%">
+						<select style="width:100%; background-color:beige {%if students.rti_language=='Fail'%};border:4px solid red{%endif%}" class="trigger_save" id="language" name="rti_language">
+							<option></option>
+							<option value="Pass" {% if students.rti_language=='Pass'%}selected{% endif%}>Pass</option>
+							<option value="Fail" {% if students.rti_language=='Fail'%}selected{% endif%}>Fail</option>
+						</select></div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" class="trigger_save" id="language_date" name="rti_language_date" {% if students.rti_language_date%} value="{{students.rti_language_date}}"{%endif%}
+						{% if students.rti_language=='Pass' or students.rti_language=='Fail' %}style="width:100%; background-color:beige"{%else%}style="width:100%; background-color:gainsboro" readonly{%endif%} /></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:26%; text-align:right; font-size:105%">Observation 1</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105% "><input type="date" name="observation_1" class="trigger_save" style="width:100%; background-color:beige" {% if students.observation_1 %} value="{{students.observation_1}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:12%; text-align:right; font-size:105%"></div>
+					<div class="mini-cols" style="width:12%; text-align:right; font-size:105%"><input type="checkbox" class="trigger_save" name="language_impaired" {% if students.language_impaired %} checked {% endif %} /></div>
+					<div class="mini-cols" style="width:19.5%; text-align:right; font-size:105%">Language Impaired</div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:100%; font-size:105%"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col" style="width:50%; text-align:center; border-left:3px solid black">
+			<div class="mini-container" style="width:100%">
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-bottom:0.75em">
+					<div class="mini-cols" style="width:40%; text-align:right; font-size:125%"></div>
+					<div class="mini-cols" style="width:19.5%; text-align:center; padding-left:0.5em; font-size:125% "><b><u>Date</u></b></div>
+					<div class="mini-cols" style="width:21%; text-align:right; font-size:125%"></div>
+					<div class="mini-cols" style="width:19.5%; text-align:center; padding-left:0.5em; font-size:125% "><b><u>Date</u></b></div>	
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center">
+					<div class="mini-cols" style="width:40%; text-align:right; font-size:105%">Reinforcement Interview (Beh. Plans Only)</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="reinforcement_interview" class="trigger_save" style="width:100%; background-color:beige" {% if students.reinforcement_interview %}value="{{students.reinforcement_interview}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:21%; text-align:right; font-size:105%">Observation 2</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="observation_2" class="trigger_save" style="width:100%; background-color:beige" {% if students.observation_2 %}value="{{students.observation_2}}"{% endif %} /></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:40%; text-align:right; font-size:105%">Report Card Review 2</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="report_card_review_2" class="trigger_save" style="width:100%; background-color:beige" {% if students.report_card_review_2 %}value="{{students.report_card_review_2}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:21%; text-align:right; font-size:105%">Social History (optional)</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="social_history" class="trigger_save" style="width:100%; background-color:beige" {% if students.social_history %}value="{{students.social_history}}"{% endif %} /></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:40%; text-align:right; font-size:105%">Post Intervention Peer Comparison</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="post_intervention_peer_comparison" class="trigger_save" style="width:100%; background-color:beige" {% if students.post_intervention_peer_comparison %}value="{{students.post_intervention_peer_comparison}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:21%; text-align:right; font-size:105%">Packet to LEA</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="packet_to_lea" class="trigger_save" style="width:100%; background-color:beige" {% if students.packet_to_lea %} value="{{students.packet_to_lea}}"{% endif %} /></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:40%; text-align:right; font-size:105%">Confirmed 3 Parent Contacts completed</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" class="trigger_save" name="confirmed_3_parent_contacts_completed" style="width:100%; background-color:beige" {% if students.confirmed_3_parent_contacts_completed %}value="{{students.confirmed_3_parent_contacts_completed}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:21%; text-align:right; font-size:105%">Staffed for ESE</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="staffed_to_ese" class="trigger_save" style="width:100%; background-color:beige" {% if students.staffed_to_ese %} value="{{students.staffed_to_ese}}"{% endif %} /></div>
+				</div>
+				<div class="mini-columns" style="display:flex; justify-content:flex-start; align-items:center; margin-top:0.75em">
+					<div class="mini-cols" style="width:40%; text-align:right; font-size:105%">Referred for ESE Consideration</div>
+					<div class="mini-cols" style="width:19.5%; text-align:left; padding-left:0.5em; font-size:105%"><input type="date" name="referred_for_ese_consideration" class="trigger_save" style="width:100%; background-color:beige" {% if students.referred_for_ese_consideration %}value="{{students.referred_for_ese_consideration}}"{% endif %} /></div>
+					<div class="mini-cols" style="width:40.5%; text-align:left; font-size:105%"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1.75em; align-items:center">
+		<div class="cols" style="width:40%; text-align:right; font-size:105%">Any Previous Retentions?</div>
+		<div class="cols" style="width:30%; padding-left:0.5em; font-size:105%"><input type="text" class="trigger_save" style="width:100%; background-color:beige" id="retention" name="previous_retentions" {% if students.previous_retentions %}value="{{students.previous_retentions}}"{% endif %} /></div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em; margin-bottom:0.75em; align-items:center">
+		<div class="cols" style="width:40%; text-align:right; font-size:105%">Other ESE Program/504?</div>
+		<div class="cols" style="width:30%; padding-left:0.5em; font-size:105%"><input type="text" class="trigger_save" style="width:100%; background-color:gainsboro" id="504" name="other_ese_program_504" {% if ese_504 %}value="{{ese_504}}"{% endif %} readonly /></div>
+	</div>-->
+</div>
+</form>
+
+<style>table.tablesorter tbody tr.normal-row td {
+background: #d3d3d3;
+  color: #000000;
+}
+table.tablesorter tbody tr.alt-row td {
+background: #F0FFF0;
+  color: #000000;
+}
+table th,td{height:50px}</style>
+    
+<div class="container" id="demo_plan" style="width:98%; max-width:1700px; min-width:1550px; border: 2px black solid; margin-top:0.25em; padding-bottom:1em; display:none">
+	<div class="columns" style="display:flex; justify-content:centered; margin-top:1em; align-items:center">
+		<div class="cols" style="width:100%; text-align:center"><h3>To view a plan, click on the plan link.</h3></div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1em; align-items:flex-start;">
+		<div class="cols" style="width:12%"></div>
+		<div class="cols" style="width:70%">
+			<table id="table_plans" class="table tablesorter table-striped table-bordered table-hover" border="1">
+				<thead class ="thead">
+				<tr style="font-size:125%">
+    					<th scope="col" style="width:100px; text-align:center; font-size:100%; background-color:darkblue; color:white">&emsp;Date&emsp;</th>
+      					<th scope="col" style="width:60px; text-align:center; font-size:100%; background-color:darkblue; color:white">Plan Tier</th>
+          				<th scope="col" style="width:120px; text-align:center; font-size:100%; background-color:darkblue; color:white">Teacher</th>
+    					<th scope="col" style="width:180px; text-align:center; font-size:100%; background-color:darkblue; color:white">Area of Intervention</th>
+      					<th scope="col" style="width:100px; text-align:center; font-size:100%; background-color:darkblue; color:white">Plan Status</th>
+						<th scope="col" style="width:100px; text-align:center; font-size:100%; background-color:darkblue; color:white">Plan Finalized?</th>
+        				<th scope="col" style="width:100px; text-align:center; font-size:100%; background-color:darkblue; color:white">Fidelity Due</th>
+           				
+				</tr></thead>
+				<tbody>{% for plan in plans %}
+				<tr {%if loop.index is divisibleby 2%}class="normal-row"{%else%}class="alt-row"{%endif%}>
+		    			<td style="text-align:center; font-size:110%">{%if plan.plan_date.month>=10%}{{plan.plan_date.month}}{%else%}0{{plan.plan_date.month}}{%endif%}-{%if plan.plan_date.day>=10%}{{plan.plan_date.day}}{%else%}0{{plan.plan_date.day}}{%endif%}-{{plan.plan_date.year}}</td>
+		    			<td style="text-align:center; font-size:110%">{{plan.intervention_level}}</td>
+		    			<td style="text-align:center; font-size:110%">{{plan.teacher}}</td>
+		    			<td style="text-align:center; font-size:110%"><a href='/plan/{{students.student_name}}/{{students.student_id}}/{{plan.intervention_area}}/{{plan.id}}'>{{plan.intervention_area}}</a></td>
+		    			<td style="text-align:center; font-size:110%">{%if plan.active%}Active{%else%}Inactive{%endif%}</td>
+		    			<td style="text-align:center; font-size:110%">{%if plan.plan_final%}Yes{%else%}No{%endif%}</td>
+		    			<td style="text-align:center; font-size:110%">{% if plan.anticipated_fidelity_assessment %}{{plan.anticipated_fidelity_assessment}}{% endif %}</td>
+		    			</tr> 
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="cols" style="width:18%; text-align:center; padding-top:0.75em">
+			<button class="btn btn-lg btn-info" id="new_plan_create">&emsp; <span class="glyphicon glyphicon-plus"></span>&nbsp;<span style="font-size:125%">Create a Plan&emsp;</span></button>
+		</div>
+	</div>	
+</div>
+ 
+<div class="container" id="demo_comment" style="width:98%; max-width:1700px; min-width:1550px; border: 2px black solid; margin-top:0.25em; padding-bottom:1em; display:none">   
+	<div style="display:none; text-align:center; width:80%; margin-top:3em" id="comment_loader"><img style="height:4em" src="/static/images/loading.gif"></div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1em">
+		<div class="cols" style="width:5%"></div>
+		<div class="cols" style="width:75%; padding-right:0.25em">
+			<table id="comment_table" class="table tablesorter table-striped table-bordered table-hover" border="1">
+				<thead><tr style="font-size:140%">
+					<th scope="col" class="filter-false" style="width:10%; text-align:center; background-color:darkblue; color:white">Edit</th>
+					<th data-placeholder="Search comments" scope="col" style="width:45%; text-align:center; background-color:darkblue; color:white">Meeting Notes</th>
+					<th scope="col" class="filter-false" style="width:10%; text-align:center; background-color:darkblue; color:white">Note Creator</th>
+					<th scope="col" class="filter-false" style="width:11%; text-align:center; background-color:darkblue; color:white">Creation Date</th>
+					<th scope="col" class="filter-false" style="width:11%; text-align:center; background-color:darkblue; color:white">Last Edited By</th>
+					<th scope="col" class="filter-false" style="width:13%; text-align:center; background-color:darkblue; color:white">Last Edited Date</th>
+				</tr></thead>
+		 		<tbody class="comments_body"> {% for rows, flags in  comments %}
+				<tr style="font-size:125%">
+					<td style="text-align:center">{%if flags or user.access_level==3%}<button class=" btn btn-md btn-primary edit_comment" name="{{rows.__dict__['id']}}" >Edit</button><br><br>
+							  {%if user.access_level==3%}<button class=" btn btn-md btn-danger delete_comment" name="{{rows.__dict__['id']}}" >Delete</button>{%endif%}{%endif%}</td>
+			    		<td style="text-align:center" class ="table_comment" id="comment_id_{{rows.__dict__['id']}}"><p style= "max-height:400px; overflow:auto">{{rows.__dict__['comment']}}</p></td>
+			    		<td style="text-align:center" class ="table_person_create">{{rows.__dict__['person_create']}}</td>
+			    		<td style="text-align:center" class="table_date_create">{%if rows.__dict__['date_create'].month<10%}0{{rows.__dict__['date_create'].month}}-{%else%}{{rows.__dict__['date_create'].month}}-{%endif%}{%if rows.__dict__['date_create'].day<10%}0{{rows.__dict__['date_create'].day}}-{%else%}{{rows.__dict__['date_create'].day}}-{%endif%}{{rows.__dict__['date_create'].year}}<br>
+						{% if rows.__dict__['date_create'].hour==0%}{{rows.__dict__['date_create'].hour+12}}:{%elif rows.__dict__['date_create'].hour <=12%}{{rows.__dict__['date_create'].hour}}:{%else%}{{rows.__dict__['date_create'].hour-12}}:{%endif%}{%if rows.__dict__['date_create'].minute >=10%}{{rows.__dict__['date_create'].minute}}:{%else%}0{{rows.__dict__['date_create'].minute}}:{%endif%}{%if rows.__dict__['date_create'].second >=10%}{{rows.__dict__['date_create'].second}}{%else%}0{{rows.__dict__['date_create'].second}}{%endif%}
+						{%if rows.__dict__['date_create'].hour <=12%}AM{%else%}PM{%endif%}</td>
+			    		<td style="text-align:center" class = "table_person_modify" id="person_modify_{{rows.__dict__['id']}}">{{rows.__dict__['person_modify']}}</td>
+			    		<td style="text-align:center" class="{{rows.__dict__['id']}} table_date_modify" id="date_modify_{{rows.__dict__['id']}}">{%if rows.__dict__['date_modify'].month<10%}0{{rows.__dict__['date_modify'].month}}-{%else%}{{rows.__dict__['date_modify'].month}}-{%endif%}{%if rows.__dict__['date_modify'].day<10%}0{{rows.__dict__['date_modify'].day}}-{%else%}{{rows.__dict__['date_modify'].day}}-{%endif%}{{rows.__dict__['date_modify'].year}}<br>
+						{% if rows.__dict__['date_modify'].hour==0%}{{rows.__dict__['date_modify'].hour+12}}:{%elif rows.__dict__['date_modify'].hour <=12%}{{rows.__dict__['date_modify'].hour}}:{%else%}{{rows.__dict__['date_modify'].hour-12}}:{%endif%}{%if rows.__dict__['date_modify'].minute >=10%}{{rows.__dict__['date_modify'].minute}}:{%else%}0{{rows.__dict__['date_modify'].minute}}:{%endif%}{%if rows.__dict__['date_create'].second >=10%}{{rows.__dict__['date_create'].second}}{%else%}0{{rows.__dict__['date_create'].second}}{%endif%}
+						{%if rows.__dict__['date_modify'].hour <=12%}AM{%else%}PM{%endif%}</td>	
+				</tr>
+				{% endfor %}</tbody>
+			</table>
+		</div>
+		<div class="cols" style="width:20%">
+			<div class="mini-container" style="width:100%; text-align:center; margin-top:2.5em">
+				<button style="text-align:center; width:70%" class="comment_button btn btn-info" id="add_comment">Add Note</button>
+			</div>
+			<div class="mini-container" style="width:100%; text-align:center; margin-top:0.75em">
+				<button type="button" style="text-align:center; width:70%" class="btn btn-success" id="print_first_comment">Print Most Recent Note</button>
+			</div>
+			<div class="mini-container" style="width:100%; text-align:center; margin-top:0.75em">
+				<button type="button" style="text-align:center; width:70%" class="btn btn-primary" id="print_comment_non_modal">Print All Meeting Notes</button>
+			</div>
+			<div class="mini-container" style="width:100%; text-align:center; margin-top:0.75em; font-size:120%">
+			You may edit meeting notes for one day after entering them.
+			Afterwards, they are final,and you must enter a new note.
+			</div>
+		</div>	
+	</div>
+
+	<div style="visibility:hidden"><div id="table_print_div"></div></div>
+</div>	
+
+<div class="container" id="demo_parent_contact" style="width:98%; max-width:1700px; min-width:1550px; border: 2px black solid; margin-top:0.25em; padding-bottom:1em; display:none">
+	<div style="display:none; text-align:center; width:80%; padding-top:6em; margin-top:6em; padding-left:60em" id="contact_loader"><img style="height:4em" src="/static/images/loading.gif"></div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1em" id="contact_table">
+		<div class="cols" style="width:5%"></div>
+		<div class="cols" style="width:80%; padding-right:0.25em; text-align:center">
+			<table id="contact_table" class="table table-striped table-bordered table-hover">
+				<thead>
+					<tr style="font-size:150%">
+						<th style="width:15%; text-align:center; background-color:darkblue; color:white">Edit</th>
+						<th style="width:15%; text-align:center; background-color:darkblue; color:white">Creator</th>
+						<th style="width:12%; text-align:center; background-color:darkblue; color:white">Contact Date</th>
+						<th style="width:15%; text-align:center; background-color:darkblue; color:white">Communication Type</th>
+						<th style="width:40%; text-align:center; background-color:darkblue; color:white">Contact Notes</th>
+					</tr>
+				</thead>
+				<tbody id="contact_table_body">
+					{% for name, contact in contacts%}
+						<tr id='contact_row_{{contact.contact_id}}'>
+							<td class="align-middle" style="font-size:120%; text-align:center;">
+								<span class="contact_edit_button">
+									<button class="btn btn-md btn-info contact_edit" style="width:70%">Edit Log</button>
+								</span>
+								<span class="contact_save_cancel" style="display:none">
+									<button class="btn btn-md btn-primary contact_save" style="width:70%">Save Edits</button><br><br>
+									<button class="btn btn-md btn-secondary contact_cancel" style="width:70%">Cancel</button>
+								</span>
+							</td>
+							<td class="align-middle contact_name" style="font-size:130%; text-align:center;">{{name}}</td>
+							<td class="align-middle" style="font-size:130%; text-align:center;">
+								<span class="contact_span contact_span_date_value">{{contact.contact_date}}</span>
+								<span class="contact_input" style="display:none;">
+									<input type="date"  class="contact_date_input" style="background-color:beige; width:90%" value="{{contact.contact_date}}"/>
+								</span>
+							</td>
+							<td class="align-middle" style="font-size:130%; text-align:center;">
+								<span class="contact_span contact_span_setting_value">{{contact.contact_setting}}</span>
+								<span class="contact_input" style="display:none;">
+									<select class="contact_setting_select" style="width:90%; background-color:beige">
+										<option value="Phone Call" {%if contact.contact_setting=='Phone Call'%}selected{%endif%}>Phone Call</option>
+										<option value="E-Mail" {%if contact.contact_setting=='E-Mail'%}selected{%endif%}>E-Mail</option>
+										<option value="Meeting" {%if contact.contact_setting=='Meeting'%}selected{%endif%}>Meeting</option>
+										<option value="Virtual Meeting" {%if contact.contact_setting=='Virtual Meeting'%}selected{%endif%}>Virtual Meeting</option>
+										<option value="Other" {%if contact.contact_setting=='Other'%}selected{%endif%}>Other</option>
+									</select>
+								</span>
+							</td>
+							<td class="align-middle" style="font-size:130%; text-align:center;">
+								<p class="contact_span contact_span_notes_value" style="max-height:300px; overflow-y:auto">{{contact.contact_notes}}</p>
+								<span class="contact_input" style="display:none;">
+									<textarea class="contact_notes_input" style="width:90%; background-color:beige" rows=3>{{contact.contact_notes}}</textarea>
+								</span>
+							</td>
+						</tr>
+					{%endfor%}
+				</tbody>
+			</table>
+		</div>
+		<div class="cols" style="width:15%; text-align:center">
+			<button class="btn btn-md btn-primary" style="width:80%" id="new_contact">Add New Contact</button><br><br>
+			<button class="btn btn-md btn-secondary" style="width:80%" id="print_contact">Print Contact Log</button>
+		</div>
+	</div>
+
+	<div style="display:none"><div id="contact_print_div"></div></div>
+</div>
+
+<!--Contact Body scripts-->
+<script>
+
+ /* edit, cancel and save functions for rows which aleady exist*/
+$('#contact_table_body').on('click', '.contact_edit', function(){
+	var current_row=$(this).closest('tr');
+	var date_insert=current_row.find('.contact_span_date_value').text();
+	var setting_insert=current_row.find('.contact_span_setting_value').text();
+	var note_insert=current_row.find('.contact_span_notes_value').text();
+	current_row.find('.contact_date_input').val(date_insert);
+	$.each(current_row.find('.contact_setting_select')[0].options, function(index, value){
+		value.selected=false;
+		if (value.value==setting_insert){
+			value.selected=true
+		}
+	});
+	current_row.find('.contact_notes_input').val(note_insert);
+	current_row.find('.contact_save_cancel').css('display', 'inline');
+	current_row.find('.contact_edit_button').css('display', 'none');
+	current_row.find('.contact_span').css('display', 'none');
+	current_row.find('.contact_input').css('display', 'inline');
+});
+
+$('#contact_table_body').on('click', '.contact_cancel', function(){
+	var current_row=$(this).closest('tr');
+	current_row.find('.contact_save_cancel').css('display', 'none');
+	current_row.find('.contact_edit_button').css('display', 'inline');
+	current_row.find('.contact_span').css('display', 'inline');
+	current_row.find('.contact_input').css('display', 'none');
+})
+
+$('#contact_table_body').on('click', '.contact_save', function(){
+	var current_row = $(this).closest('tr');
+	var data = new FormData();
+	var contact_date=current_row.find('.contact_date_input').val();
+	var contact_setting=current_row.find('.contact_setting_select').val();
+	var contact_notes=current_row.find('.contact_notes_input').val();
+	var contact_id=current_row.attr('id').split('_')[2];
+	var student_id_insert="{{students.student_id}}";
+	var url_base="{{url_for('update_contact', student_id='', contact_id='')}}";
+	var url = url_base.slice(0, url_base.length-1);
+	url+=student_id_insert + '/' + contact_id;
+	if (!contact_date || contact_date=="" || !contact_notes || contact_notes.trim()==""){
+		alert('Must fill out all fields to save contact!');
+		return;
+	}
+	else{
+		$('#contact_loader').css('display', 'inline');
+		$('#contact_table').css('display', 'none');
+		data.append('contact_date', contact_date);
+		data.append('contact_setting', contact_setting);
+		data.append('contact_notes', contact_notes);
+		fetch(url=url, {
+			method: 'PUT',
+			body: data,
+		}).then(res => res.json()).then(data => {
+			if(data.error){	alert(data.error);
+						   	$('#contact_loader').css('display', 'none');
+						   	$('#contact_table').css('display', 'flex');
+			}
+			else{	alert(data.success);
+					var date_insert=data.contact_date.split(' ')[3] + '-' + month_convert(data.contact_date.split(' ')[2]) + '-' + data.contact_date.split(' ')[1];
+					current_row.find('.contact_span_date_value').text(date_insert);
+					current_row.find('.contact_span_setting_value').text(data.contact_setting);
+					current_row.find('.contact_span_notes_value').text(data.contact_notes);
+					current_row.find('.contact_save_cancel_new').css('display', 'none');
+					current_row.find('.contact_save_cancel').css('display', 'none');
+					current_row.find('.contact_edit_button').css('display', 'inline');
+					current_row.find('.contact_span').css('display', 'inline');
+					current_row.find('.contact_input').css('display', 'none');
+					$('#contact_loader').css('display', 'none');
+					$('#contact_table').css('display', 'flex');
+			
+			}
+		}).catch(error => {
+			alert('An error occurred while processing request.');
+			$('#contact_loader').css('display', 'none');
+			$('#contact_table').css('display', 'flex');
+		})
+	}
+})
+
+/* New Cancel and Save functions */
+$('#new_contact').on('click', function(){
+	var append_string='<tr style="align-items:center">';
+		append_string+='<td class="align-middle" style="font-size:120%; text-align:center;"><span class="contact_edit_button" style="display:none">';
+		append_string+='<button class="btn btn-md btn-info contact_edit" style="width:70%">Edit Log</button></span>';
+		append_string+='<span class="contact_save_cancel" style="display:none"><button class="btn btn-md btn-primary contact_save" style="width:70%">Save Edits</button><br><br>';
+		append_string+='<button class="btn btn-md btn-secondary contact_cancel" style="width:70%">Cancel</button></span>';
+		append_string+='<span class="contact_save_cancel_new"><button class="btn btn-md btn-primary contact_save_new" style="width:80%">Save Contact</button><br><br>';
+		append_string+='<button class="btn btn-md btn-secondary contact_cancel_new" style="width:80%">Cancel</button></td>';
+		append_string+='<td class="align-middle contact_name" style="font-size:130%; text-align:center;">' + "{{user.name}}" + '</td>';
+		append_string+='<td class="align-middle" style="font-size:130%; text-align:center;"><span class="contact_span contact_span_date_value" style="display:none"></span>';
+		append_string+='<span class="contact_input"><input type="date" class="contact_date_input" style="background-color:beige; width:90%" /></span></td>';
+		append_string+='<td class="align-middle" style="font-size:130%; text-align:center;"><span class="contact_span contact_span_setting_value" style="display:none"></span>';
+		append_string+='<span class="contact_input"><select class="contact_setting_select" style="width:90%; background-color:beige">';
+		append_string+='<option value="Phone Call">Phone Call</option><option value="E-Mail">E-Mail</option>';
+		append_string+='<option value="Meeting">Meeting</option><option value="Virtual Meeting">Virtual Meeting</option>';
+		append_string+='<option value="Other">Other</option></select></span></td>';
+		append_string+='<td class="align-middle" style="font-size:130%; text-align:center;"><p class="contact_span contact_span_notes_value" style="max-height:300px; overflow-y:auto"></p>';
+		append_string+='<span class="contact_input"><textarea class="contact_notes_input" style="width:90%; background-color:beige" rows=3></textarea></span></td>';
+		append_string+='</tr>';
+
+	$('#contact_table_body').append(append_string);
+});
+
+$('#contact_table_body').on('click', '.contact_cancel_new', function(){
+	var row_to_delete = $(this).closest('tr');
+	row_to_delete.remove();
+})
+
+$('#contact_table_body').on('click', '.contact_save_new', function(){
+	var current_row = $(this).closest('tr');
+	var data = new FormData();
+	var contact_date=current_row.find('.contact_date_input').val();
+	var contact_setting=current_row.find('.contact_setting_select').val();
+	var contact_notes=current_row.find('.contact_notes_input').val();
+	var url="{{url_for('new_contact', student_id='')}}" + "{{students.student_id}}";
+	if (!contact_date || contact_date=="" || !contact_notes || contact_notes.trim()==""){
+		alert('Must fill out all fields to save contact!');
+		return;
+	}
+	else{
+		$('#contact_loader').css('display', 'inline');
+		$('#contact_table').css('display', 'none');
+		data.append('contact_date', contact_date);
+		data.append('contact_setting', contact_setting);
+		data.append('contact_notes', contact_notes);
+		fetch(url=url, {
+			method: 'POST',
+			body: data,
+		}).then(res => res.json()).then(data => {
+			if(data.error){	alert(data.error);
+						   	$('#contact_loader').css('display', 'none');
+						   	$('#contact_table').css('display', 'flex');
+			}
+			else{	alert(data.success);
+					var id_insert='contact_row_' + data.contact_id;
+					var date_insert=data.contact_date.split(' ')[3] + '-' + month_convert(data.contact_date.split(' ')[2]) + '-' + data.contact_date.split(' ')[1];
+					current_row.attr('id', id_insert);
+					current_row.find('.contact_span_date_value').text(date_insert);
+					current_row.find('.contact_span_setting_value').text(data.contact_setting);
+					current_row.find('.contact_span_notes_value').text(data.contact_notes);
+					current_row.find('.contact_save_cancel_new').css('display', 'none');
+					current_row.find('.contact_edit_button').css('display', 'inline');
+					current_row.find('.contact_span').css('display', 'inline');
+					current_row.find('.contact_input').css('display', 'none');
+					$('#contact_loader').css('display', 'none');
+					$('#contact_table').css('display', 'flex');
+			
+			}
+		}).catch(error => {
+			alert('An error occurred while processing request.');
+			$('#contact_loader').css('display', 'none');
+			$('#contact_table').css('display', 'flex');
+		})
+	}
+})
+
+/* Contact print*/
+$('#print_contact').on('click', function(){
+	var table_rows=$('#contact_table_body').find('tr');
+	var print_string="<div style='text-align:center'><h3>SCHOOL DISTRICT</h3><h4>MTSS/Response to Intervention</h4><br><h4><b>Parent Contact Log</b></h4></div><div class='container' style='text-align:center'>";
+		print_string+="<table style='border:solid 1px black; width:100%'><thead><tr style='font-size:110%'><th style='width:17%; text-align:center; border-right: 1px solid black'>Creator</th>";
+		print_string+="<th style='width:16%; text-align:center;border-right: 1px solid black'>Contact Date</th>";
+		print_string+="<th style='width:30%; text-align:center;border-right: 1px solid black'>Communication Type</th>";
+		print_string+="<th style='width:37%; text-align:center;'>Contact Notes</th></tr></thead>";
+		if (table_rows.length!=0){
+		$.each(table_rows, function(index, value){
+			var name_insert=value.querySelector('.contact_name').innerHTML;
+			var date_insert=value.querySelector('.contact_span_date_value').innerHTML;
+			var setting_insert=value.querySelector('.contact_span_setting_value').innerHTML;
+			var note_insert=value.querySelector('.contact_span_notes_value').innerHTML;
+			if (index==0){
+				if (table_rows.length==1){
+					print_string+="<tr><td style='text-align:center; border-top: 1px solid black; border-right: 1px solid black'>" + name_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-top: 1px solid black; border-right: 1px solid black'>" + date_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-top: 1px solid black; border-right: 1px solid black'>" + setting_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-top: 1px solid black;'>" + note_insert +  "</td></tr>";
+				}
+				else{
+					print_string+="<tr><td style='text-align:center; border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black'>" + name_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black'>" + date_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black'>" + setting_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-top: 1px solid black; border-bottom: 1px solid black'>" + note_insert +  "</td></tr>";
+				}
+			}
+			else if (index!=0 && index==table_rows.length-1){
+					print_string+="<tr><td style='text-align:center; border-right: 1px solid black'>" + name_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-right: 1px solid black'>" + date_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-right: 1px solid black'>" + setting_insert +  "</td>";
+					print_string+="<td style='text-align:center; '>" + note_insert +  "</td></tr>";
+			}
+			else{
+					print_string+="<tr><td style='text-align:center; border-right: 1px solid black; border-bottom: 1px solid black'>" + name_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-right: 1px solid black; border-bottom: 1px solid black'>" + date_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-right: 1px solid black; border-bottom: 1px solid black'>" + setting_insert +  "</td>";
+					print_string+="<td style='text-align:center; border-bottom: 1px solid black'>" + note_insert +  "</td></tr>";
+			}
+		})
+		}
+		print_string+="</table></div>";
+	$('#contact_print_div').html(print_string);
+	$('#contact_print_div').printThis();
+})
+
+</script>
+
+
+<div class="container" id="demo_change" style="width:60%; max-width:1000px; min-width:900px; border: 2px black solid; margin-top:3em; padding-bottom:1em; display:none"> 
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em">
+		<div class="cols" style="width:50%; text-align:right; font-size:125%">
+			Student Added to RtI Database By:
+		</div>
+		<div class="cols" style="width:50%; text-align:left; padding-left:0.5em; font-size:125%">
+			{{students.person_create}}
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em">
+		<div class="cols" style="width:50%; text-align:right; font-size:125%">
+			Date Student Added:
+		</div>
+		<div class="cols" style="width:50%; text-align:left; padding-left:0.5em; font-size:125%">
+			{%if students.date_create.month>=10%}{{students.date_create.month}}{%else%}0{{students.date_create.month}}{%endif%}-{%if students.date_create.day>=10%}{{students.date_create.day}}{%else%}0{{students.date_create.day}}{%endif%}-{{students.date_create.year}}
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em">
+		<div class="cols" style="width:50%; text-align:right; font-size:125%">
+			Student RtI Info Updated By:
+		</div>
+		<div class="cols" style="width:50%; text-align:left; padding-left:0.5em; font-size:125%">
+			{{students.person_modify}}
+		</div>
+	</div>
+	<div class="columns" style="display:flex; justify-content:flex-start; margin-top:0.75em">
+		<div class="cols" style="width:50%; text-align:right; font-size:125%">
+			Date Student RtI Info Updated:
+		</div>
+		<div class="cols" style="width:50%; text-align:left; padding-left:0.5em; font-size:125%">
+			{%if students.date_modify.month>=10%}{{students.date_modify.month}}{%else%}0{{students.date_modify.month}}{%endif%}-{%if students.date_modify.day>=10%}{{students.date_modify.day}}{%else%}0{{students.date_modify.day}}{%endif%}-{{students.date_modify.year}}
+		</div>	
+		
+	</div>
+</div>
+
+<div class="container" id="demo_academic_forms" style="width:98%; max-width:1700px; min-width:1550px; border: 2px black solid; margin-top:0.25em; padding-bottom:1em; display:none"> 
+	<div style="padding-top:0.5em; padding-bottom: 0.5em">
+  		<ul class="nav nav-pills center-pills" style="display:flex; justify-content:center">
+    		<a class="form_tab" href="#"><li id="observation_form" class="active" style="border: 2px solid blue; width:175px; padding-left:2px; padding-right:2px; text-align:center; font-size:130%"><b>&nbsp;Observation(s)&nbsp;</b></li></a>
+    		<a class="form_tab" href="#"><li id="pre_intervention_interview" style="border: 2px solid blue; width:300px; padding-left:2px; padding-right:2px; text-align:center; font-size:130%">&thinsp;<b>Pre-Intervention Interview&thinsp;</b></li></a>
+    		<a class="form_tab" href="#"><li id="social_history_form" style="border: 2px solid blue; width:350px; padding-left:2px; padding-right:2px; text-align:center; font-size:130%"><b>Social/Developmental History Interview</b></li></a>
+    		<a class="form_tab" href="#"><li id="post_intervention_interview" style="border: 2px solid blue; width:300px; padding-left:2px; padding-right:2px; text-align:center; font-size:130%"><b>Post-Intervention Peer Comparison</b></li></a>
+    	</ul>
+	</div>
+	
+	<div class="container" id="observation_form_div" style="width:100%; max-width:1700px; min-width:1550px; margin-top:0.5em; padding-bottom:1em;">
+		<div style="display:none; text-align:center; width:80%; margin-top:3em" id="comment_loader"><img style="height:4em" src="/static/images/loading.gif"></div>
+			<div class="columns" style="display:flex; justify-content:flex-start; margin-top:1em">
+				{% set ns = namespace(observation_write=0, observation_read=0)%}
+				{%for form in access%}
+					
+					{%if form.form.strip()=='observation'%}
+						{%set ns.observation_write =form.write_access%}
+						{%set ns.observation_read =form.read_access%}
+					{%endif%}
+				{%endfor%}
+				{% if user.access_level < ns.observation_write %}
+				<div class="cols" style="width:24%"></div>
+				<div class="cols" style="width:52%"><div style="width:100%; text-align:center; font-size:125%; margin-bottom:0.5em">Finalized Observation(s)</div>
+					<table id="observation_final_table" class="table tablesorter table-striped table-bordered table-hover" border="1">
+						<thead class ="thead-dark">
+						<tr>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">View Observation</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Observation Date</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Observer Name</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Teacher Name</th>
+						</tr></thead>
+					<tbody class="observation_final_body">
+						{%for observation in observations%}
+						{%if observation.observation_final==True%}
+						<tr>
+							<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_final" id="observation_final_{{observation.observation_id}}">View Observation</button></td>
+							<td style="text-align:center">{%if observation.observation_date.month<10%}0{{observation.observation_date.month}}{%else%}{{observation.observation_date.month}}{%endif%}-{%if observation.observation_date.day<10%}0{{observation.observation_date.day}}{%else%}{{observation.observation_date.day}}{%endif%}-{{observation.observation_date.year}}</td>
+							<td style="text-align:center">{{observation.observer_name}}</td>
+							<td style="text-align:center">{{observation.observation_teacher}}</td>
+						</tr>
+						{%endif%}
+						{%endfor%}
+					</tbody></table>
+				</div>
+				<div class="cols" style="width:24%"></div>
+					{%else%}
+					<div class="cols" style="width:38%; padding-right:0.5em"><div style="width:100%; text-align:center; font-size:125%; margin-bottom:0.5em">Finalized Observation(s)</div>
+					<table id="observation_final_table" class="table tablesorter table-striped table-bordered table-hover" border="1">
+						<thead class ="thead-dark">
+						<tr>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">View Observation</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Observation Date</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Observer Name</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Teacher Name</th>
+						</tr></thead>
+					<tbody class="observation_final_body">
+						{%for observation in observations%}
+						{%if observation.observation_final==True%}
+						<tr>
+							<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_final" id="observation_final_{{observation.observation_id}}">Open Observation</button></td>
+							<td style="text-align:center">{%if observation.observation_date.month<10%}0{{observation.observation_date.month}}{%else%}{{observation.observation_date.month}}{%endif%}-{%if observation.observation_date.day<10%}0{{observation.observation_date.day}}{%else%}{{observation.observation_date.day}}{%endif%}-{{observation.observation_date.year}}</td>
+							<td style="text-align:center">{{observation.observer_name}}</td>
+							<td style="text-align:center">{{observation.observation_teacher}}</td>
+						</tr>
+						{%endif%}
+						{%endfor%}
+					</tbody></table>
+					</div>
+					<div class="cols" style="width:38%; padding-left:0.5em"><div style="width:100%; text-align:center; font-size:125%; margin-bottom:0.5em">Observation Draft(s)</div>
+					<table id="observation_draft_table" class="table tablesorter table-striped table-bordered table-hover" border="1">
+						<thead class ="thead-dark">
+						<tr>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Delete Draft</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Edit Draft</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Created Date</th>
+							<th scope="col" class="filter-false" style="width:25%; text-align:center">Observer Name</th>
+						</tr></thead>
+					<tbody class="observation_draft_body">
+						{%for observation in observations%}
+						{%if observation.observation_final==False%}
+						<tr>
+							<td style="text-align:center"><button class="btn btn-danger btn-md delete_observation" id="observation_draft_delete_{{observation.observation_id}}">Delete Draft</button></td>
+							<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_draft" id="observation_draft_{{observation.observation_id}}">Edit Draft</button></td>
+							<td style="text-align:center">{%if observation.date_create.month<10%}0{{observation.date_create.month}}{%else%}{{observation.date_create.month}}{%endif%}-{%if observation.date_create.day<10%}0{{observation.date_create.day}}{%else%}{{observation.date_create.day}}{%endif%}-{{observation.date_create.year}}</td>
+							<td style="text-align:center">{{observation.observer_name}}</td>
+						</tr>
+						{%endif%}
+						{%endfor%}
+					</tbody></table>
+					</div>
+					<div class="cols" style="width:24%; text-align:center; margin-top:3.5em">
+						<div class="mini-container" style="width:100%">
+								<div class="mini-columns" style="display:flex: justify-content:center">
+								<button class="btn btn-success form_create_button" style="width:90%; font-size:110%" id="form_create_button_A">Create New Observation</button>
+								</div>
+								<div class="mini-columns" style="display:flex: justify-content:center; margin-top:0.75em">
+								<button class="btn btn-info form_create_button" style="width:90%; font-size:110%" id="form_create_button_B">Create New Observation (Alternate B)</button>
+								</div>
+								<div class="mini-columns" style="display:flex: justify-content:center; margin-top:0.75em">
+								<button class="btn btn-info form_create_button" style="width:90%; font-size:110%" id="form_create_button_C">Create New Observation (Alternate C)</button>
+								</div>
+						</div>
+					</div>
+					{%endif%}
+				
+				
+			</div>
+		<div style="display:none"><div id="observation_print_div"></div></div>
+	</div>
+	<div class="container" id="pre_intervention_interview_div" style="width:100%; max-width:1700px; min-width:1550px; margin-top:0.5em; padding-bottom:1em; display:none">
+		Pre-intervention interview here
+	</div>
+	<div class="container" id="social_history_form_div" style="width:100%; max-width:1700px; min-width:1550px; margin-top:0.5em; padding-bottom:1em; display:none">
+		Social History Forms here
+	</div>
+	<div class="container" id="post_intervention_interview_div" style="width:100%; max-width:1700px; min-width:1550px; margin-top:0.5em; padding-bottom:1em; display:none">
+		Post Intervention Interview Forms here
+	</div>
+</div>
+
+
+<style>table tr:nth-child(odd) {
+  background-color: #eee;}
+table tr:nth-child(even) {
+  background-color: #fff;}
+table th,td{height:50px}</style>
+
+<!--Academic javascript-->
+<script type="text/javascript" >
+	$('#academic_checkbox').on('change', function(){
+		if(!$(this).prop('checked')){$('#academic_referral_date').prop('readonly', true);
+						 $('#academic_consent_date').prop('readonly', true);
+						 $('#staffed_date_academic').prop('readonly', true);
+						 $('#academic_referral_date').css('background-color', 'gainsboro');
+						 $('#academic_consent_date').css('background-color', 'gainsboro');
+						 $('#staffed_date_academic').css('background-color', 'gainsboro');
+						}
+						else{
+							$('#academic_referral_date').prop('readonly', false);
+							$('#academic_consent_date').prop('readonly', false);
+							$('#academic_referral_date').css('background-color', 'beige');
+							$('#academic_consent_date').css('background-color', 'beige');
+							if(($('#status').val()=='Staffed' || $('#status').val()=='Staffed-Active') && $('#academic_consent_date').val() && $('#academic_consent_date').val()!=""){
+								$('#staffed_date_academic').prop('readonly', false);
+								$('#staffed_date_academic').css('background-color', 'beige');
+							} 
+						}
+	})
+
+	$('#academic_consent_date').on('focus', function(){
+		if($(this).prop('readonly')){return;}
+		if(!$('#academic_referral_date').val() || $('#academic_referral_date').val()==""){
+			alert('Need to fill out a referral date before completing consent date');
+			$('#academic_referral_date').focus();
+		}
+	})
+
+	$('#academic_consent_date').on('change', function(){
+		if($('#staffed_date_academic').val() && $('#staffed_date_academic').val()!=""){
+			let date_consent= new Date($(this).val());
+			let date_staff=new Date($('#staffed_date_academic').val());
+			if(date_staff < date_consent){
+				alert('Staffed date cannot occur before consent date! The consent date has been reset to previous value.');
+				$(this).val($('#academic_consent_date_prev').val());
+				return;
+			}
+		}
+		if($(this).val() && $(this).val()!="" && ($('#status').val()=='Staffed' || $('#status').val()=='Staffed-Active')){
+			$('#staffed_date_academic').prop('readonly', false);
+			$('#staffed_date_academic').css('background-color', 'beige');
+		}
+		$('#academic_consent_date_prev').val($(this).val());
+	})
+
+	$('#status').on('change', function(){
+		if($(this).val()=='Staffed' || $(this).val()=='Staffed-Active'){
+			if($('#academic_consent_date').val() && $('#academic_consent_date').val()!=""){
+				$('#staffed_date_academic').prop('readonly', false);
+				$('#staffed_date_academic').css('background-color', 'beige');
+			}
+		}
+		else{
+			$('#staffed_date_academic').prop('readonly', true);
+			$('#staffed_date_academic').css('background-color', 'gainsboro');
+		}
+	})
+
+	$('#staffed_date_academic').on('focus', function(){
+		if($(this).prop('readonly')){return;}
+		if(!$('#academic_consent_date').val() || $('#academic_consent_date').val()==""){
+			alert('Need to fill out a consent date before completing staffed date');
+			$('#academic_consent_date').focus();
+		}
+	})
+
+	$('#staffed_date_academic').on('change', function(){
+		if($(this).val() && $(this).val()!="" && $('#academic_consent_date').val()!=""){
+			let date_staff= new Date($(this).val());
+			let date_consent=new Date($('#academic_consent_date').val());
+			if(date_staff < date_consent){
+				alert('Staffed date cannot occur before consent date! The staffed date has been reset to previous value');
+				$(this).val($('#academic_staffed_date_prev').val());
+				$(this).focus();
+				return;
+			}
+		}
+		$('#academic_staffed_date_prev').val($(this).val());
+	})
+
+</script>
+
+<!--Behavior javascript-->
+<script type="text/javascript" >
+	$('#behavior_checkbox').on('change', function(){
+		if(!$(this).prop('checked')){$('#behavior_referral_date').prop('readonly', true);
+						 $('#behavior_consent_date').prop('readonly', true);
+						 $('#staffed_date_behavior').prop('readonly', true);
+						 $('#behavior_referral_date').css('background-color', 'gainsboro');
+						 $('#behavior_consent_date').css('background-color', 'gainsboro');
+						 $('#staffed_date_behavior').css('background-color', 'gainsboro');
+						}
+						else{
+							$('#behavior_referral_date').prop('readonly', false);
+							$('#behavior_consent_date').prop('readonly', false);
+							$('#behavior_referral_date').css('background-color', 'beige');
+							$('#behavior_consent_date').css('background-color', 'beige');
+							if(($('#status').val()=='Staffed' || $('#status').val()=='Staffed-Active') && $('#behavior_consent_date').val() && $('#behavior_consent_date').val()!=""){
+								$('#staffed_date_behavior').prop('readonly', false);
+								$('#staffed_date_behavior').css('background-color', 'beige');
+							}   
+						}
+	})
+
+	$('#behavior_consent_date').on('focus', function(){
+		if($(this).prop('readonly')){return;}
+		if(!$('#behavior_referral_date').val() || $('#behavior_referral_date').val()==""){
+			alert('Need to fill out a referral date before completing consent date');
+			$('#behavior_referral_date').focus();
+		}
+	})
+
+	$('#behavior_consent_date').on('change', function(){
+		if($('#staffed_date_behavior').val() && $('#staffed_date_behavior').val()!=""){
+			let date_consent= new Date($(this).val());
+			let date_staff=new Date($('#staffed_date_behavior').val());
+			if(date_staff < date_consent){
+				alert('Staffed date cannot occur before consent date! The consent date has been reset to previous value.');
+				$(this).val($('#behavior_consent_date_prev').val());
+				return;
+			}
+		}
+		if($(this).val() && $(this).val()!="" && ($('#status').val()=='Staffed' || $('#status').val()=='Staffed-Active')){
+			$('#staffed_date_behavior').prop('readonly', false);
+			$('#staffed_date_behavior').css('background-color', 'beige');
+		}
+		$('#behavior_consent_date_prev').val($(this).val());
+	})
+
+	$('#status').on('change', function(){
+		if($(this).val()=='Staffed' || $(this).val()=='Staffed-Active'){
+			if($('#behavior_consent_date').val() && $('#behavior_consent_date').val()!=""){
+				$('#staffed_date_behavior').prop('readonly', false);
+				$('#staffed_date_behavior').css('background-color', 'beige');
+			}
+		}
+		else{
+			$('#staffed_date_behavior').prop('readonly', true);
+			$('#staffed_date_behavior').css('background-color', 'gainsboro');
+		}
+	})
+
+	$('#staffed_date_behavior').on('focus', function(){
+		if($(this).prop('readonly')){return;}
+		if(!$('#behavior_consent_date').val() || $('#behavior_consent_date').val()==""){
+			alert('Need to fill out a consent date before completing staffed date');
+			$('#behavior_consent_date').focus();
+		}
+	})
+
+	$('#staffed_date_behavior').on('change', function(){
+		if($(this).val() && $(this).val()!="" && $('#behavior_consent_date').val()!=""){
+			let date_staff= new Date($(this).val());
+			let date_consent=new Date($('#behavior_consent_date').val());
+			if(date_staff < date_consent){
+				alert('Staffed date cannot occur before consent date! The staffed date has been reset to previous value');
+				$(this).val($('#behavior_staffed_date_prev').val());
+				$(this).focus();
+				return;
+			}
+		}
+		$('#behavior_staffed_date_prev').val($(this).val());
+	})
+
+</script>
+		   
+<!--Language javascript-->
+<script type="text/javascript" >
+	$('#language_checkbox').on('change', function(){
+		if(!$(this).prop('checked')){$('#language_referral_date').prop('readonly', true);
+						 $('#language_consent_date').prop('readonly', true);
+						 $('#staffed_date_language').prop('readonly', true);
+						 $('#language_referral_date').css('background-color', 'gainsboro');
+						 $('#language_consent_date').css('background-color', 'gainsboro');
+						 $('#staffed_date_language').css('background-color', 'gainsboro');
+						}
+						else{
+							$('#language_referral_date').prop('readonly', false);
+							$('#language_consent_date').prop('readonly', false);
+							$('#language_referral_date').css('background-color', 'beige');
+							$('#language_consent_date').css('background-color', 'beige');
+							if(($('#status').val()=='Staffed' || $('#status').val()=='Staffed-Active') && $('#language_consent_date').val() && $('#language_consent_date').val()!=""){
+								$('#staffed_date_language').prop('readonly', false);
+								$('#staffed_date_language').css('background-color', 'beige');
+							}   
+						}
+	})
+
+	$('#language_consent_date').on('focus', function(){
+		if($(this).prop('readonly')){return;}
+		if(!$('#language_referral_date').val() || $('#language_referral_date').val()==""){
+			alert('Need to fill out a referral date before completing consent date');
+			$('#language_referral_date').focus();
+		}
+	})
+
+	$('#language_consent_date').on('change', function(){
+		if($('#staffed_date_language').val() && $('#staffed_date_language').val()!=""){
+			let date_consent= new Date($(this).val());
+			let date_staff=new Date($('#staffed_date_language').val());
+			if(date_staff < date_consent){
+				alert('Staffed date cannot occur before consent date! The consent date has been reset to previous value.');
+				$(this).val($('#language_consent_date_prev').val());
+				return;
+			}
+		}
+		if($(this).val() && $(this).val()!="" && ($('#status').val()=='Staffed' || $('#status').val()=='Staffed-Active')){
+			$('#staffed_date_language').prop('readonly', false);
+			$('#staffed_date_language').css('background-color', 'beige');
+		}
+		$('#language_consent_date_prev').val($(this).val());
+	})
+
+	$('#status').on('change', function(){
+		if($(this).val()=='Staffed' || $(this).val()=='Staffed-Active'){
+			if($('#language_consent_date').val() && $('#language_consent_date').val()!=""){
+				$('#staffed_date_language').prop('readonly', false);
+				$('#staffed_date_language').css('background-color', 'beige');
+			}
+		}
+		else{
+			$('#staffed_date_language').prop('readonly', true);
+			$('#staffed_date_language').css('background-color', 'gainsboro');
+		}
+	})
+
+	$('#staffed_date_language').on('focus', function(){
+		if($(this).prop('readonly')){return;}
+		if(!$('#language_consent_date').val() || $('#language_consent_date').val()==""){
+			alert('Need to fill out a consent date before completing staffed date');
+			$('#language_consent_date').focus();
+		}
+	})
+
+	$('#staffed_date_language').on('change', function(){
+		if($(this).val() && $(this).val()!="" && $('#language_consent_date').val()!=""){
+			let date_staff= new Date($(this).val());
+			let date_consent=new Date($('#language_consent_date').val());
+			if(date_staff < date_consent){
+				alert('Staffed date cannot occur before consent date! The staffed date has been reset to previous value');
+				$(this).val($('#language_staffed_date_prev').val());
+				$(this).focus();
+				return;
+			}
+		}
+		$('#language_staffed_date_prev').val($(this).val());
+	})
+
+</script>
+
+<script>
+	$('#print_comment_non_modal').on('click', function(event){
+				event.preventDefault();
+				var brExp = /<br\s*\/?>/i;
+				var table_rows=$('.comments_body tr');
+				var print_string="";
+				print_string += "<div style='text-align: center'><h3>SCHOOL DISTRICT</h3><h4>MTSS/Response to Intervention</h4><br></div><p><b>Notes</b></p><div class='container'>";
+				
+				$.each(table_rows, function(){var time= $(this).children(".table_date_modify").html();
+						time = time.split(brExp)[0];
+						var date= time.split("-");
+						var date_add=date[0]+"/"+ date[1] + "/" + date[2];
+					    var temp_string = '<div style="font-size:120%"><b>' + date_add + '</b></div><div style="margin-left: 6em">'+ $(this).children(".table_comment").text()+'</div>';
+					    print_string += temp_string;
+					});
+				print_string += '</div><br><div style="border-top-style: solid; border-top-color: black; border-top-width: medium"><br><h4>Meeting Date&emsp; _________________________</h4></div>';
+				print_string += '<br><div><h4><span style="width: 25vw"><b><u>Team Decisions</u></b></span><span style="width: 75vw; margin-left:12em"><b><u>Participant Signatures</u></b></span></h4></div>';
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;Initial intervention plan developed &nbsp;&nbsp;<span style="margin-left:7em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;Adequate progress is being made &nbsp;<span style="margin-left:7em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Continue current plan &nbsp;&nbsp;<span style="margin-left:10em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Reduce intensity and/or frequency of plan &ensp;&nbsp;<span style="margin-left:1em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Modify current plan and maintain current tier<span style="margin-left:1em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;Adequate progress is not being made &nbsp;&nbsp;<span style="margin-left:5em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Modify current plan and maintain current tier<span style="margin-left:1em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Intensify plan &ensp;<span style="margin-left:14em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Refer for ESE Consideration &ensp;<span style="margin-left:7em">_________________________________________</span></div>';	
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;&thinsp;Other <span style="margin-left:1em">__________________________________________________________________________</span></div>';
+				print_string += '<div style="margin-left:6em">&nbsp;<span>__________________________________________________________________________</span></div>';
+
+			$('#table_print_div').html(print_string);
+			$('#table_print_div').printThis();
+});
+
+$('#print_first_comment').on('click', function(event){
+				event.preventDefault();
+			var print_string="";
+			var brExp = /<br\s*\/?>/i;
+			var first_row=$('.comments_body tr:first');
+				print_string += "<div style='text-align: center'><h3>SCHOOL DISTRICT</h3><h4>MTSS/Response to Intervention</h4><br></div><p><b>Notes</b></p><div class='container'>";
+			var time=first_row.children(".table_date_modify").html();	
+			time = time.split(brExp)[0].trim();
+			var date= time.split("-");
+			var date_add=date[0]+"/"+ date[1] + "/" + date[2];
+			print_string+='<div style="font-size:120%"><b>' + date_add + '</b></div><div style="margin-left: 6em">'+ first_row.children(".table_comment").text()+'</div>';
+			print_string += '</div><br><div style="border-top-style: solid; border-top-color: black; border-top-width: medium"><br><h4>Meeting Date&emsp; _________________________</h4></div>';
+				print_string += '<br><div><h4><span style="width: 25vw"><b><u>Team Decisions</u></b></span><span style="width: 75vw; margin-left:12em"><b><u>Participant Signatures</u></b></span></h4></div>';
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;Initial intervention plan developed &nbsp;&nbsp;<span style="margin-left:7em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;Adequate progress is being made &nbsp;<span style="margin-left:7em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Continue current plan &nbsp;&nbsp;<span style="margin-left:10em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Reduce intensity and/or frequency of plan &ensp;&nbsp;<span style="margin-left:1em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Modify current plan and maintain current tier<span style="margin-left:1em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;Adequate progress is not being made &nbsp;&nbsp;<span style="margin-left:5em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Modify current plan and maintain current tier<span style="margin-left:1em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Intensify plan &ensp;<span style="margin-left:14em">_________________________________________</span></div>';
+				print_string += '<div style="margin-left:3em"><input type="checkbox">&ensp;Refer for ESE Consideration &ensp;<span style="margin-left:7em">_________________________________________</span></div>';	
+				print_string += '<div style="margin-left:1em"><input type="checkbox">&ensp;&thinsp;Other <span style="margin-left:1em">__________________________________________________________________________</span></div>';
+				print_string += '<div style="margin-left:6em">&nbsp;<span>__________________________________________________________________________</span></div>';
+
+			$('#table_print_div').html(print_string);
+			$('#table_print_div').printThis();
+});
+
+</script>
+
+<script>
+$('.form_create_button').on('click', function(){
+		event.preventDefault();
+		var type = $(this).attr("id").split('_')[3];
+		$.ajax({url : '/rti-observation-create/{{students.student_id}}', method: 'POST', data : {type : type}}).done(
+			function(data){
+			if(data.error){alert(data.error);}
+			else{alert(data.success);
+				$('#store_form_id').val(data.observation_id);
+				$('#new_observe').val('Y');
+				var url='/rti-observation/{{students.student_id}}/' + data.observation_id;
+				$('.button_obs').css("display", "inline");	
+				$('#print_observation').css("display", "none");
+				$('#form_modal').attr('src', url);
+				$('#formModal').modal({
+						backdrop : 'static',
+						keyboard : false});
+				}})
+})
+
+$('.open_observation_final').on('click', function(){
+		event.preventDefault();
+		var obs_id= $(this).attr("id").split('_')[2];
+		$('#store_form_id').val(obs_id);
+		$('#new_observe').val('N');
+		var url='/rti-observation/{{students.student_id}}/' + obs_id;
+		$('.button_obs').css("display", "none");	
+		$('#print_observation').css("display", "inline");
+		$('#form_modal').attr('src', url);
+		$('#formModal').modal({
+						backdrop : 'static',
+						keyboard : false});
+					
+})
+
+$('.observation_final_body').on('click', '.open_observation_final_added', function(event){
+				event.preventDefault();
+		var obs_id= $(this).attr("id").split('_')[2];
+		$('#store_form_id').val(obs_id);
+		$('#new_observe').val('N');
+		var url='/rti-observation/{{students.student_id}}/' + obs_id;
+		$('.button_obs').css("display", "none");	
+		$('#print_observation').css("display", "inline");
+		$('#form_modal').attr('src', url);
+		$('#formModal').modal({
+						backdrop : 'static',
+						keyboard : false});
+})
+
+$('.open_observation_draft').on('click', function(){
+		event.preventDefault();
+		var obs_id= $(this).attr("id").split('_')[2];
+		$('#store_form_id').val(obs_id);
+		$('#new_observe').val('N');
+		var url='/rti-observation/{{students.student_id}}/' + obs_id;
+		$('.button_obs').css("display", "inline");	
+		$('#print_observation').css("display", "none");
+		$('#form_modal').attr('src', url);
+		$('#formModal').modal({
+						backdrop : 'static',
+						keyboard : false});
+					
+})
+
+$('.observation_draft_body').on('click', '.open_observation_draft_added', function(event){
+				event.preventDefault();
+				var obs_id= $(this).attr("id").split('_')[2];
+				$('#store_form_id').val(obs_id);
+				$('#new_observe').val('N');
+				var url='/rti-observation/{{students.student_id}}/' + obs_id;
+				$('.button_obs').css("display", "inline");	
+				$('#print_observation').css("display", "none");
+				$('#form_modal').attr('src', url);
+				$('#formModal').modal({
+						backdrop : 'static',
+						keyboard : false});
+})
+
+$('.delete_observation').on('click', function(){
+		event.preventDefault();
+		var x =confirm('This draft will be permanently deleted? Are you sure you want to continue?');
+		if(x){
+		var obs_id= $(this).attr("id").split('_')[3];
+		var el_del=$(this).parent().parent('tr');
+		var url='/rti-observation/{{students.student_id}}/' + obs_id;
+		$.ajax({url : url, method: 'PUT'}).done(
+					function(data){
+						if(data.error){alert(data.error)}
+						else{alert(data.success);
+							el_del.remove();}
+							})}
+})
+
+$('.observation_draft_body').on('click', '.delete_observation_added', function(){
+		event.preventDefault();
+		var x =confirm('This draft will be permanently deleted? Are you sure you want to continue?');
+		if(x){
+		var obs_id= $(this).attr("id").split('_')[3];
+		var el_del=$(this).parent().parent('tr');
+		var url='/rti-observation/{{students.student_id}}/' + obs_id;
+		$.ajax({url : url, method: 'PUT'}).done(
+					function(data){
+						if(data.error){alert(data.error)}
+						else{alert(data.success);
+							el_del.remove();}
+							})}
+})
+
+</script>
+
+
+<input type="hidden" id="store_form_id"/>
+<input type="hidden" id="new_observe"/>
+<div class="modal" id="formModal" role="dialog">
+	<div class="modal-dialog modal-xl">
+    		<div class="modal-content" style="height:800px">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Observation Form</h4>
+        <button type="button" class="close close_modal" >&times;</button>
+      </div>
+	
+	 <!-- Modal body -->
+      <div class="modal-body" >
+        
+	<iframe id="form_modal" style="width:98%; height:600px; overflow:auto"></iframe>
+      </div>
+
+	 <!-- Modal footer -->
+      <div class="modal-footer">
+	<button type="button" class="btn btn-info" style="display:none" id="print_observation">Print Observation</button>
+	<button type="button" class="btn btn-secondary button_obs" id="final_save">Finalize Observation</button> &emsp;
+	<button type="button" class="btn btn-secondary button_obs" id="draft_save">Save Draft</button> &emsp;
+        <button type="button" class="btn btn-danger close_modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$('#draft_save').on('click', function(){
+			var iframe=document.getElementById("form_modal");
+			iframe.contentWindow.document.getElementById("observation_final").value= 'N';
+			if(iframe.contentWindow.document.getElementById("observation_type").value=='C'){
+			var c_b_1_check=iframe.contentWindow.document.getElementById("c_b_1_other").checked;
+			var c_b_1_text_check=iframe.contentWindow.document.getElementById("c_b_1_other_text").value;
+			var c_b_3_check=iframe.contentWindow.document.getElementById("c_b_3_other").checked;
+			var c_b_3_text_check=iframe.contentWindow.document.getElementById("c_b_3_other_text").value;
+			if((c_b_1_check && (!c_b_1_text_check || c_b_1_text_check.trim()=="")) || (c_b_3_check && (!c_b_3_text_check || c_b_3_text_check==""))){
+				alert('In order to save draft, you cannot have an other (specify) box checked without info in the textbox');
+				return false;}
+			}
+			var form= iframe.contentWindow.document.getElementsByTagName("form")[0];
+			var data = new FormData(form);
+			var url='/rti-observation/{{students.student_id}}/'+ $('#store_form_id').val();		
+			$.ajax({url : url , method: 'POST', data: data, processData: false, contentType: false, dataType: "json"}).done(
+				function(data){
+				if(data.error){alert(data.error);}
+				else{alert(data.success);
+					if($('#new_observe').val()=='Y'){var date = new Date();
+									var day = date.getDate();
+									var true_day= "";
+									var true_month= "";
+									if(day<10){true_day += "0"+day}
+											else{true_day += day};
+									var month = date.getMonth()+1;
+									if(month<10){true_month += "0" + month}
+											else{true_month += month}
+									var year = date.getFullYear();
+								
+									var full_date = "" + true_month + "-" + true_day + "-" + year;
+									var string_add= '<tr><td style="text-align:center"><button class="btn btn-danger btn-md delete_observation_added" id="observation_draft_delete_' + $('#store_form_id').val() + '" >Delete Draft</button></td>';
+									string_add+= '<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_draft_added" id="observation_draft_' + $('#store_form_id').val() + '" >Edit Draft</button></td>';
+									string_add+= '<td style="text-align:center">' + full_date + '</td>';
+									string_add+= '<td style="text-align:center">{{current_user.username}}</td></tr>';
+									$('.observation_draft_body').prepend(string_add);
+						}
+					$('#formModal').modal('hide');
+				}})
+})
+
+$('#final_save').on('click', function(){
+			var iframe=document.getElementById("form_modal");
+			iframe.contentWindow.document.getElementById("observation_final").value= 'Y';
+			if(iframe.contentWindow.document.getElementById("observation_type").value=='C'){
+			var c_b_1_check=iframe.contentWindow.document.getElementById("c_b_1_other").checked;
+			var c_b_1_text_check=iframe.contentWindow.document.getElementById("c_b_1_other_text").value;
+			var c_b_3_check=iframe.contentWindow.document.getElementById("c_b_3_other").checked;
+			var c_b_3_text_check=iframe.contentWindow.document.getElementById("c_b_3_other_text").value;
+			if((c_b_1_check && (!c_b_1_text_check || c_b_1_text_check.trim()=="")) || (c_b_3_check && (!c_b_3_text_check || c_b_3_text_check==""))){
+				alert('In order to save draft, you cannot have an other (specify) box checked without info in the textbox');
+				return false;}
+			}
+			var form= iframe.contentWindow.document.getElementsByTagName("form")[0];
+			var data = new FormData(form);
+			var url='/rti-observation/{{students.student_id}}/'+ $('#store_form_id').val();		
+			$.ajax({url : url , method: 'POST', data: data, processData: false, contentType: false, dataType: "json"}).done(
+				function(data){
+				if(data.error){alert(data.error);}
+				else{alert(data.success);
+					var date = data.observation_date.split(' ');
+					var day = date[1];
+					var true_day= "";
+					var true_month= "";
+					if(day<10){true_day += "0"+day}
+						else{true_day += day};
+					var month = month_convert(date[2]);
+					var year = date[3];
+								
+					var full_date = "" + month + "-" + day + "-" + year;
+					var string_add= '<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_final_added" id="observation_final_' + $('#store_form_id').val() + '" >Open Observation</button></td>';
+					string_add+= '<td style="text-align:center">' + full_date + '</td>';
+					string_add+= '<td style="text-align:center">{{current_user.username}}</td>';
+					string_add+= '<td style="text-align:center">' + data.teacher + '</td></tr>';
+					$('.observation_final_body').prepend(string_add);
+						if($('#new_observe').val()=='N'){var el_del=$('#observation_draft_'+$('#store_form_id').val()).parent().parent('tr');
+											el_del.remove();}
+					$('#formModal').modal('hide');
+				}})
+})
+
+
+$('.close_modal').on('click', function(){
+	var iframe=document.getElementById("form_modal");
+	if(iframe.contentWindow.document.getElementById("change_tracker").value==1){
+		var x= confirm('You have unsaved changes in the observation. If you close this form, then the changes will be lost. You sure you want to proceed?');
+		if(x){if($('#new_observe').val()=='Y'){var date = new Date();
+									var day = date.getDate();
+									var true_day= "";
+									var true_month= "";
+									if(day<10){true_day += "0"+day}
+											else{true_day += day};
+									var month = date.getMonth()+1;
+									if(month<10){true_month += "0" + month}
+											else{true_month += month}
+									var year = date.getFullYear();
+								
+									var full_date = "" + true_month + "-" + true_day + "-" + year;
+									var string_add= '<tr><td style="text-align:center"><button class="btn btn-danger btn-md delete_observation_added" id="observation_draft_delete_' + $('#store_form_id').val() + '">Delete Draft</button></td>';
+									string_add+= '<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_draft_added" id="observation_draft_' + $('#store_form_id').val() + '">Edit Draft</button></td>';
+									string_add+= '<td style="text-align:center">' + full_date + '</td>';
+									string_add+= '<td style="text-align:center">{{current_user.username}}</td></tr>';
+									$('.observation_draft_body').prepend(string_add);
+						}
+						$('#formModal').modal('hide');}}
+	else{if($('#new_observe').val()=='Y'){var date = new Date();
+									var day = date.getDate();
+									var true_day= "";
+									var true_month= "";
+									if(day<10){true_day += "0"+day}
+											else{true_day += day};
+									var month = date.getMonth()+1;
+									if(month<10){true_month += "0" + month}
+											else{true_month += month}
+									var year = date.getFullYear();
+								
+									var full_date = "" + true_month + "-" + true_day + "-" + year;
+									var string_add= '<tr><td style="text-align:center"><button class="btn btn-danger btn-md delete_observation_added" id="observation_draft_delete_' + $('#store_form_id').val() + '">Delete Draft</button></td>';
+									string_add+= '<td style="text-align:center"><button class="btn btn-primary btn-md open_observation_draft_added" id="observation_draft_' + $('#store_form_id').val() + '">Edit Draft</button></td>';
+									string_add+= '<td style="text-align:center">' + full_date + '</td>';
+									string_add+= '<td style="text-align:center">{{current_user.username}}</td></tr>';
+									$('.observation_draft_body').prepend(string_add);
+						}
+						$('#formModal').modal('hide');}
+})
+
+$('#print_observation').on('click', function(){
+			event.preventDefault();
+			var print_string="";
+			var iframe=document.getElementById("form_modal");
+	if (iframe.contentWindow.document.getElementById("observation_type").value=='A'){
+	print_string+= "<style> .cols{font-size : 105%} .top-1{text-align : left; width : 50%} .top-2{width : 25%; text-align:right} .top-3{width : 25%}</style>";
+	print_string+= "<div style='text-align: center; margin-top:1em'><h4>SCHOOL DISTRICT</h4><h4>Student Services</h4><h4><b><u>Teacher Observations</b></u></h4></div>";
+	print_string+= "<div class='container' style='width:98%; max-width:1500px; min-width:800px; margin-top:0.5em'><div class='columns' style='display:flex; justify-content:flex-start'>";
+	print_string+= "<div class='cols top-1'>Student's Name:&ensp; <u>{{students.student_name}}</u></div><div class='cols top-2'>Teacher's Name:&ensp; </div><div class='cols top-3'><input type='text' class='change' style='width:100%' name='observation_teacher' value='" + iframe.contentWindow.document.getElementById("observation_teacher").value + "' /></div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; margin-top:0.25em'><div class='cols top-1'>Teacher's Signature:&ensp; <b><u>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</u></b></div><div class='cols top-2'>Date:&ensp; </div><div class='cols top-3'><input type='date' name='observation_date' style='width:100%' value='" + iframe.contentWindow.document.getElementsByName("observation_date")[0].value + "'/></div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; margin-top:0.5em'>Please answer questions 1 and 2 and then rate each of the following items based on your personal observations of the student’s recent and current behavior by circling the appropriate number to the left of each statement. Ratings should be made in light of how this student compares to the average student in a typical general education class.</div></div>";
+	print_string+= "<div class='container' style='width:98%; max-width:1500px; min-width:800px; margin-top:0.5em; border:2px solid black; border-bottom:0'><div class='columns' style='width:100%; margin-top:0.25em'>";
+	print_string+= "&ensp; 1. &ensp;What are the student's strengths? &thinsp;<b>(required)</b></div><div class='columns' style='margin-top:0.5em; margin-bottom:0.5em; width:100%'><textarea name='text_1' style='width:97.5%' rows=3>" + iframe.contentWindow.document.getElementsByName("text_1")[0].value + "</textarea></div></div>";
+	print_string+= "<div class='container' style='width:98%; max-width:1500px; min-width:800px; border:2px solid black'><div class='columns' style='padding-top:0.5em'>";
+	print_string+= "&ensp; 2. &ensp;What are the concerns for the student? &thinsp;<b>(required)</b></div><div class='columns' style='margin-top:0.5em; margin-bottom:0.5em; width:100%'><textarea name='text_2' style='width:97.5%' rows=3>" + iframe.contentWindow.document.getElementsByName("text_2")[0].value + "</textarea></div></div>";
+	print_string+= "<div class='container' style='width:98%; max-width:1500px; min-width:800px; margin-top:0.5em; margin-bottom:0.5em'><div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'>";
+	print_string+= "<div class='cols' style='width:4%; text-align:left; font-size:110%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>1.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has fine motor difficulties in comparison to peers.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_1")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>2.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has gross motor difficulties in comparison to peers.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_2")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>3.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Is easily confused or disoriented.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_3")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>4.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Exhibits excessive body movement.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_4")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>5.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Is well liked by peers.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_5")[0].value + "</div></div>";	
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>6.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Appears to learn more easily in some areas than others.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_6")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>7.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has trouble recognizing differences between similar sounds or similar words.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_7")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>8.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has many friends.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_8")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>9.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Seeks attention excessively.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_9")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>10.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Tries to complete work assignments.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_10")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>11.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Seems interested in learning.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_11")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>12.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Learns more slowly than classmates.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_12")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>13.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has difficulty attending to a task for more than a very short time.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_13")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>14.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Hurries through his or her work.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_14")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>15.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Complies with teacher's requests.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_15")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>16.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>" + '"Picks" on others verbally.</div>';
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_16")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>17.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Is short tempered or very irritable.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_17")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>18.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Completes assignments within designated time.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_18")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>19.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Is defiant and/or disobedient, talks back, breaks rules, etc.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_19")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>20.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Disturbs class: is disruptive or uncooperative in group activities.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_20")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%; margin-top:2.5em'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>21.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Is rejected or ignored by peers.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_21")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>22.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Needs encouragement to enter into group activities.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_22")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>23.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Avoids contact or interaction with others; withdrawn, prefers to be alone.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_23")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>24.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Daydreams, stares into space: seems to be " + '"somewhere else".</div>';
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_24")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>25.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Seems very tense (nervous or jittery).</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_25")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>26.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Appears sad.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_26")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>27.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has great difficulty changing to a new activity.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_27")[0].value + "</div></div>";	
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>28.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has difficulty expressing ideas verbally; can't " + '"find" the right words or tell a story in sequence.</div>';
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_28")[0].value + "</div></div>";	
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; border-bottom:0; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>29.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Forgets what he/she " + '"knew" yesterday or what was just said.</div>';
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_29")[0].value + "</div></div>";
+	print_string+= "<div class='columns' style='display:flex; justify-content:flex-start; border: 2px solid black; width:100%'><div class='cols' style='width:4%; text-align:left; font-size:100%; padding-left:0.5em; padding-top:0.2em; padding-bottom:0.2em'>30.</div><div class='cols' style='width:86%; text-align:left; font-size:100%; border-right:2px solid black; padding-top:0.2em; padding-bottom:0.2em'>Has trouble understanding simple instructions and simple statements.</div>";
+	print_string+= "<div class='cols' style='width:10%; text-align:center; padding-top:0.2em; padding-bottom:0.2em; font-size:100%'>" + iframe.contentWindow.document.getElementsByName("question_30")[0].value + "</div></div>";	
+	print_string+= "</div>";
+	
+		$('#observation_print_div').html(print_string);
+		$('#observation_print_div').printThis();}
+
+	else{$('#observation_print_div').html(iframe.contentWindow.document.getElementById("observation_print").innerHTML);
+		$('#observation_print_div').printThis();}
+})
+
+</script>
+
+<div class="modal" id="myModal" >
+	<div class="modal-dialog modal-lg">
+    		<div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Modal Heading</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+	
+	 <!-- Modal body -->
+      <div class="modal-body">
+        
+      </div>
+
+	 <!-- Modal footer -->
+      <div class="modal-footer">
+	<button type="button" class="btn btn-primary" id="print_modal">Open Print Window</button> &emsp;
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="dialog-form" style="background-color:beige">
+ 
+  <form id="comment_form">
+      <label for="comment_text" style="font-size:150%"><b>New Note:&thinsp;</b></label>
+      <textarea name="comment_text" id="comment_text" class="text ui-widget-content ui-corner-all" rows="32" cols="160" style="vertical-align:top;"></textarea>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </form>
+</div>
+
+<div id="dialog-form1" title="Edit Note" style="background-color:beige">
+ 
+  <form id="comment_form_edit">
+      <label for="comment_text_edit" style="font-size:150%"><b>Edit Note:&thinsp;</b></label>
+      <textarea name="comment_text_edit" id="comment_text_edit" class="text ui-widget-content ui-corner-all" rows="32" cols="160" style="vertical-align:top;"></textarea>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </form>
+</div>
+
+<script>
+$(function() {
+$("#comment_table").DataTable(
+{'ordering' : false,
+ 'searchable' : true,
+ 'columns' : [ {'searchable' : false}, null, {'searchable' : false}, {'searchable' : false}, {'searchable' : false}, {'searchable' : false}]});
+
+ $("#table_plans").tablesorter({
+    
+    widgets: ["zebra"],
+    
+    widgetOptions : {
+      zebra : [ "normal-row", "alt-row" ],
+	}
+    });
+	
+});</script>
+
+	  
+<script>
+       $('.tab').on('click',function(event){
+          event.preventDefault();
+          var x = $('.tab');
+          /*x.parent('li').removeClass('active');
+		  $(this).parent('li').addClass('active');*/
+		  x.children('li').removeClass('active');
+		  $(this).children('li').addClass('active');
+       if ($('#rti').hasClass('active')){
+        $('#demo').show();
+      }
+      else{
+        $('#demo').hide()
+      }
+      if ($('#plan').hasClass('active')){
+        $('#demo_plan').show();
+      }
+      else{
+        $('#demo_plan').hide()
+      }
+      if ($('#comment').hasClass('active')){
+        $('#demo_comment').show();
+      }
+      else{
+        $('#demo_comment').hide();
+      }
+      if ($('#academic_forms').hasClass('active')){
+        $('#demo_academic_forms').show();
+      }
+      else{
+        $('#demo_academic_forms').hide();
+      }
+	  if($('#contact_log').hasClass('active')){
+		$('#demo_parent_contact').show();
+	  }
+	  else{
+		$('#demo_parent_contact').hide(); 
+	  }
+      if ($('#change').hasClass('active')){
+        $('#demo_change').show();
+      }
+      else{
+        $('#demo_change').hide();
+      }
+        })
+
+    $('.form_tab').on('click',function(event){
+          event.preventDefault();
+          var x = $('.form_tab');
+          x.children('li').removeClass('active');
+          $(this).children('li').addClass('active');
+       if ($('#observation_form').hasClass('active')){
+        $('#observation_form_div').show();
+      }
+      else{
+        $('#observation_form_div').hide()
+      }
+      if ($('#pre_intervention_interview').hasClass('active')){
+        $('#pre_intervention_interview_div').show();
+      }
+      else{
+        $('#pre_intervention_interview_div').hide()
+      }
+      if ($('#social_history_form').hasClass('active')){
+        $('#social_history_form_div').show();
+      }
+      else{
+        $('#social_history_form_div').hide();
+      }
+      if ($('#post_intervention_interview').hasClass('active')){
+        $('#post_intervention_interview_div').show();
+      }
+      else{
+        $('#post_intervention_interview_div').hide();
+      }
+        })
+      
+      
+    </script>
+    
+   <script>
+  $('.sort').on('click',function(event){
+    if ($(this).hasClass('active')){
+    $(this).children().toggle();
+    if ($(this).hasClass('forward')){$(this).removeClass('forward');
+    }
+    else{$(this).addClass('forward');}}
+    else{$('.sort').removeClass('active');
+        $(this).addClass('active');}
+    if($(this).hasClass('forward')){
+      $('#forward').show();
+      $('#reverse').hide();
+      $('#forward').text($(this).parent().attr('id'));
+    }
+    else{$('#forward').hide();
+      $('#reverse').show();}
+    })
+</script>
+
+<script>
+
+$(".trigger_save").change(function(){
+	$('#save').css({"border-color":"red", "border-width": "4px"});
+	if (!($('#save').hasClass("unsaved"))){$('#save').addClass("unsaved");}})	
+
+function remove_save(){
+if((($('#vision').val()=='Pass' || $('#vision').val()=='Fail') && $('#vision_date').val()=="") || (($('#hearing').val()=='Pass' || $('#hearing').val()=='Fail') && $('#hearing_date').val()=="") || (($('#language').val()=='Pass' || $('#language').val()=='Fail') && $('#language_date').val()=="")){
+var x = confirm("You have a result in vision, hearing or language with no corresponding date. If you proceed to save, then the data for that result will be cleared. You sure you want to continue?")
+if(!x){event.preventDefault();}
+else{$('#save').removeClass("unsaved");}
+}
+else{
+$('#save').removeClass("unsaved");}}
+
+window.addEventListener("beforeunload", function(event) {
+  if($('#save').hasClass("unsaved")){event.returnValue = confirm("You have unsaved Data. You sure you want to leave?");}
+})
+
+window.window.onbeforeunload=function(event){
+if($('#save').hasClass("unsaved")){event.returnValue = confirm("You have unsaved Data. You sure you want to leave?");
+}}
+
+
+
+</script>
+
+<script>
+
+function month_convert(month){switch(month){
+				case 'Jan':
+					return '01';
+					break;
+				case 'Feb':
+					return'02';
+					break;
+				case 'Mar':
+					return '03';
+					break;
+				case 'Apr':
+					return '04';
+					break;
+				case 'May':
+					return '05';
+					break;
+				case 'Jun':
+					return '06';
+					break;
+				case 'Jul':
+					return '07';
+					break;
+				case 'Aug':
+					return '08';
+					break;
+				case 'Sep':
+					return '09';
+					break;
+				case 'Oct':
+					return '10';
+					break;
+				case 'Nov':
+					return '11';
+					break;
+				case 'Dec':
+					return '12';
+					break;
+					}}
+
+function time_convert(time){
+		var hour=Number(time.trim().split(':')[0]);
+		var minutes=''+time.trim().split(':')[1];
+		var seconds=''+time.trim().split(':')[2];
+		var AM_PM='';
+		if(hour==0){hour+=12; AM_PM='AM'}
+		else if(hour<12){AM_PM='AM'}
+		else if (hour==12){AM_PM='PM'}
+		else{hour-=12; AM_PM='PM'}
+		return ""+hour + ":" + minutes + ":" + seconds + " " + AM_PM
+		
+}
+
+ $( function() {
+    var dialog, dialog_1, x, y, comment_id, per_mod, date_mod
+
+dialog = $( "#dialog-form" ).dialog({
+      autoOpen: false,
+      height: 750,
+      width: 1200,
+	  modal: true,
+	  title: "Create Note",
+      buttons: [{
+        text: "OK",
+	click: function(){$('#comment_table').toggle(); 
+			  $('#comment_loader').toggle();
+			  $.post('/comment/{{students.student_id}}', {comment : $('#comment_text').val()}).done(
+				function(data){if (data.error){$('#comment_table').toggle(); 
+							       $('#comment_loader').toggle();
+							       alert(""+data.error);}
+				  else{alert(""+data.success);
+				     var date_create_new = data.date_create.split(",")[1];
+				     var date_modify_new = data.date_modify.split(",")[1];
+				     date_create_new = date_create_new.trim();
+				     date_modify_new = date_modify_new.trim();
+				     date_create_new = month_convert(date_create_new.split(" ")[1])+ '-' + date_create_new.split(" ")[0] +'-' + date_create_new.split(" ")[2] + '<br> '+ time_convert(date_create_new.split(" ")[3]);
+				     date_modify_new = month_convert(date_modify_new.split(" ")[1])+ '-' + date_modify_new.split(" ")[0] +'-' + date_modify_new.split(" ")[2] + '<br> '+ time_convert(date_modify_new.split(" ")[3]);
+				var table_string= '<tr><td style="text-align:center"><button class="btn btn-md btn-primary edit_comment_added" name="'+ data.id + '">Edit</button><br><br>'
+						  {%if user.access_level==3%}+ '<button class=" btn btn-md btn-danger delete_comment_added" name="' + data.id + '">Delete</button></td>'{%endif%}
+						  + '<td style="text-align:center" class ="table_comment" id="comment_id_' + data.id +'"><p style= "max-height:400px; overflow:auto">'+data.comment+ '</p></td>'
+						  + '<td style="text-align:center">' + data.person_create + '</td>'
+						  + '<td style="text-align:center">' + date_create_new + '</td>'
+						  + '<td style="text-align:center" id="person_modify_'+ data.id +'">' + data.person_modify + '</td>'
+						  + '<td style="text-align:center" class="table_date_modify" id="date_modify_' + data.id + '">' + date_modify_new + '</td></tr>'
+				$('.comments_body').prepend(table_string);
+				$('#comment_table').toggle(); 
+				$('#comment_loader').toggle();
+				}
+				}); $('#comment_text').val("");dialog.dialog("close");}},
+        {text: "Cancel",
+	 click: function() {
+          dialog.dialog( "close" );
+        }
+      }]
+    });
+    
+     $( "#add_comment" ).on( "click", function() {
+      dialog.dialog( "open" );
+    });
+
+dialog1 = $( "#dialog-form1" ).dialog({
+      autoOpen: false,
+      height:750,
+      width: 1200,
+	  modal: true,
+	  title: 'Edit Note',
+      buttons: [{
+        text: "OK",
+	click: function(){$('#comment_table').toggle(); 
+			  $('#comment_loader').toggle();
+			  $.ajax({url: '/comment/{{students.student_id}}', data: {comment : $('#comment_text_edit').val(), id: y},
+					method : 'PUT'}).done(
+				function(data){if (data.error){$('#comment_table').toggle(); 
+								$('#comment_loader').toggle();
+								alert(""+data.error)}
+					else{alert(""+data.success);
+				var date_modify_new = data.date_modify.split(",")[1];
+				date_modify_new = date_modify_new.trim();
+				date_modify_new = month_convert(date_modify_new.split(" ")[1])+ '-' + date_modify_new.split(" ")[0] +'-' + date_modify_new.split(" ")[2] + '<br> '+ time_convert(date_modify_new.split(" ")[3]);
+				x.html('<p style="max-height:400px; overflow:auto">'+data.comment+'</p>');
+				per_mod.text(data.person_modify);
+				date_mod.html(date_modify_new);
+				$('#comment_table').toggle(); 
+				$('#comment_loader').toggle();
+				}
+				}); 
+				dialog1.dialog("close");}},
+        {text: "Cancel",
+	 click: function() {
+          dialog1.dialog( "close" );
+        }
+      }]
+    });
+
+	$( ".edit_comment" ).on( "click", function() {
+	y=$(this).attr('name');
+	comment_id = "#"+ $(this).attr('name');
+	x= $('#comment_id_'+ $(this).attr('name'));
+	per_mod= $('#person_modify_'+ $(this).attr('name'));
+	date_mod= $('#date_modify_'+ $(this).attr('name'));
+	$('#comment_text_edit').val(x.text());
+      dialog1.dialog( "open" );
+    });
+
+	$( ".comments_body" ).on( "click", ".edit_comment_added", function() {
+	y=$(this).attr('name');
+	comment_id = "#"+ $(this).attr('name');
+	x= $('#comment_id_'+ $(this).attr('name'));
+	per_mod= $('#person_modify_'+ $(this).attr('name'));
+	date_mod= $('#date_modify_'+ $(this).attr('name'));
+	$('#comment_text_edit').val(x.text());
+      dialog1.dialog( "open" );
+    });
+
+	$( ".delete_comment" ).on( "click", function(event) {
+	event.preventDefault();
+	var id=$(this).attr('name');
+	var el_del =$(this).parent().parent();
+	var confirm_del = confirm('You sure you want to delete this comment? It will be permanently deleted');
+
+	if (confirm_del){$('#comment_table').toggle(); 
+			  $('#comment_loader').toggle();
+			$.ajax({url: '/comment/{{students.student_id}}' + '?'+ $.param({'id': id}), method : 'DELETE'}).done(
+			function(data){alert(""+data.success);
+					el_del.remove();
+					$('#comment_table').toggle(); 
+			  		$('#comment_loader').toggle();});
+			}
+	
+    });
+	$( ".comments_body" ).on( "click", ".delete_comment_added", function(event) {
+	event.preventDefault();
+	var id=$(this).attr('name');
+	var el_del =$(this).parent().parent();
+	var confirm_del = confirm('You sure you want to delete this comment? It will be permanently deleted');
+
+	if (confirm_del){$('#comment_table').toggle(); 
+			  $('#comment_loader').toggle();
+			  $.ajax({url: '/comment/{{students.student_id}}' + '?'+ $.param({'id': id}), method : 'DELETE'}).done(
+			function(data){alert(""+data.success);
+					el_del.remove();
+					$('#comment_table').toggle(); 
+			  		$('#comment_loader').toggle();});
+			}
+	
+    });
+	
+})
+</script>
+
+<script>
+$('#delete_student').on('click', function(event){
+	event.preventDefault();
+	var confirm_del = confirm('Are you sure you want to delete this student? The student and all associated comments, plans, and tests will be permanently deleted');
+	if (confirm_del){$.ajax({url: '/RTI_delete/{{students.student_id}}', method: 'POST'}).done(
+			function(data){alert(""+data.complete);
+				if (data.success){window.location.href='/RTI'};
+			});
+		}
+})
+</script>
+
+<script>
+$('#status').on('change', function(){
+if($(this).val()=='Referred' || $(this).val()=='Staffed' || $(this).val()=='Staffed-Active'){$('#referred_checkboxes').css("display", "block");}
+else{$('#referred_checkboxes').css("display", "none");}
+})
+
+$('#vision').on('change', function(){
+if($(this).val()=='Pass' || $(this).val()=='Fail'){$('#vision_date').prop("readonly", false); $('#vision_date').css("background-color", "beige");}
+else{$('#vision_date').prop("readonly", true);
+$('#vision_date').css("background-color", "gainsboro");
+if($('#vision_date').val()){
+alert('If you save with no vision result, the vision date will be cleared!')}}
+if($('#store_vision').val()!=$(this).val()){$('#vision_date').val("");}
+if($(this).val()=='Fail'){$('#vision').css("border", "4px solid red");}
+else{$('#vision').css("border", "0");}
+$('#store_vision').val($(this).val());
+})
+
+$('#hearing').on('change', function(){
+if($(this).val()=='Pass' || $(this).val()=='Fail'){$('#hearing_date').prop("readonly", false); $('#hearing_date').css("background-color", "beige");}
+else{$('#hearing_date').prop("readonly", true);
+$('#hearing_date').css("background-color", "gainsboro");
+if($('#hearing_date').val()){
+alert('If you save with no hearing result, the hearing date will be cleared!')}}
+if($('#store_hearing').val()!=$(this).val()){$('#hearing_date').val("");}
+if($(this).val()=='Fail'){$('#hearing').css("border", "4px solid red");}
+else{$('#hearing').css("border", "0");}
+$('#store_hearing').val($(this).val());
+})
+
+$('#language').on('change', function(){
+if($(this).val()=='Pass' || $(this).val()=='Fail'){$('#language_date').prop("readonly", false); $('#language_date').css("background-color", "beige");}
+else{$('#language_date').prop("readonly", true);
+$('#language_date').css("background-color", "gainsboro");
+if($('#language_date').val()){
+alert('If you save with no language result, the language date will be cleared!')}}
+if($('#store_language').val()!=$(this).val()){$('#language_date').val("");}
+if($(this).val()=='Fail'){$('#language').css("border", "4px solid red");}
+else{$('#language').css("border", "0");}
+$('#store_language').val($(this).val());
+})
+
+$('#new_plan_create').on('click', function(){
+	window.location.href="{{url_for('create_plan', student_id='')}}" + "{{students.student_id}}";
+})
+</script>
+
+<script>
+$(function(){
+	$('#comment_table_filter').children('label').prepend("Notes ");
+	$('#comment_table_filter').children('label').css('font-size', '125%');
+	$('#comment_table_length').children('label').css('font-size', '125%');
+
+})
+</script>
+
+<!--Parent Contact Log-->
+
+<input type="hidden" id="contact__id"/>
+
+<div class="modal" id="contactModal" role="dialog">
+	<div class="modal-dialog " style="width:1150px; height:880px">
+    		<div class="modal-content" style="height:800px">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Observation Form</h4>
+        <button type="button" class="close close_modal" >&times;</button>
+      </div>
+	
+	 <!-- Modal body -->
+      <div class="modal-body" >
+        
+	<iframe id="form_modal" style="width:98%; height:600px; overflow:auto"></iframe>
+      </div>
+
+	 <!-- Modal footer -->
+      <div class="modal-footer">
+	<button type="button" class="btn btn-info" style="display:none" id="print_observation">Print Observation</button>
+	<button type="button" class="btn btn-secondary button_obs" id="final_save">Finalize Observation</button> &emsp;
+	<button type="button" class="btn btn-secondary button_obs" id="draft_save">Save Draft</button> &emsp;
+        <button type="button" class="btn btn-danger close_modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

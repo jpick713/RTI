@@ -1,0 +1,23 @@
+,id,plan_date,total time on tier,intervention_area,intervention_level,name,student ID,school,grade
+5,12,2020-04-13,235,Written Expression,3,"Houck, Camden",011510,John Adams High School,12
+3,9,2020-03-05,214,Reading Comprehension,2,"Adams, Chang",009039,Thomas Jefferson High School,9
+2,7,2020-03-01,205,Mathematics Calculation,3,"Aaron, Henry",006982,John Adams High School,9
+1,5,2020-02-17,186,Mathematics Problem Solving,2,"Aaron, Henry",006982,John Adams High School,9
+4,8,2020-04-10,178,Language - Phonological Processing,2,"Adams, Chang",009039,Thomas Jefferson High School,9
+7,14,2020-04-21,178,Reading - Basic Reading Skills,3,"Rose, Larkyn",100105,John Adams High School,11
+8,15,2020-05-02,167,Behavior - Physical Aggression,2,"Aaron, Henry",006982,John Adams High School,9
+6,10,2020-04-21,166,Behavior - Excessive fears/phobias and/or worrying,2,"Adams, Chang",009039,Thomas Jefferson High School,9
+0,3,2020-01-13,126,Reading Comprehension,2,"Aaron, Henry",006982,John Adams High School,9
+9,2,2020-05-21,125,Reading - Reading Fluency Skills,2,"Bellwoar, Nate",001798,Thomas Jefferson High School,11
+10,16,2020-06-03,124,Reading Comprehension,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+13,19,2020-06-09,118,Behavior - Excessive fears/phobias and/or worrying,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+11,23,2020-06-08,118,Oral Expression,2,"Aaron, Henry",006982,John Adams High School,9
+12,18,2020-06-09,118,Language - Phonological Processing,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+14,22,2020-06-09,112,Oral Expression,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+15,26,2020-06-25,111,Language - Social Interaction,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+16,27,2020-06-25,102,Behavior - Non-compliance,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+17,28,2020-06-25,102,Reading - Basic Reading Skills,2,"Wynn, Anna",100235,Martin van Buren Elementary School,3
+18,29,2020-06-26,102,Mathematics Calculation,2,"Houck, Camden",011510,John Adams High School,12
+19,30,2020-07-06,101,Reading - Reading Fluency Skills,2,"Wade, Jameson",100210,John Tyler Elementary School,2
+20,66,2020-07-09,91,Reading - Basic Reading Skills,2,"Brown, Allison",001124,James Monroe High School,10
+21,25,2020-08-18,88,Reading - Basic Reading Skills,3,"Aaron, Henry",006982,John Adams High School,9

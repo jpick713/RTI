@@ -1,0 +1,39 @@
+sqlquery="Select * FROM User WHERE "
+
+if current_user.access_level==1:
+	sqlquery+= "school == {}".format(current_user.school)
+
+else:
+	sqlquery+= "school in_ ["
+	for i in range(len(request.form.getlist('school'))):
+		if i==0:
+			sqlquery+="{}".format(request.form.getlist('school')[0])
+		else:
+			sqlquery+= ", {}".format(request.form.getlist('school')[i])
+	sqlquery+= "]"
+
+if request.search.getlist('search') is not None:
+	#sqlquery+= ", student_id like {} or student_name like {}".format(request.form.get('search'), request.form.get('search'))
+	results = Student.query.filter(sqlquery)./
+		filter(or_(student_id.like('%{}%'.format(request.form.get('search'))), student_name.like('%{}%'.format(request.form.get('search'))))).all()
+
+else:
+	data_names=['grade', 'tiers', 'status', 'race', 'gender']
+	results= Student.query.filter(sqlalchemy)
+	if request.form.getlist('grade') is not None:
+		results=results.filter(grade in_(request.form.getlist('grade'))
+	if request.form.getlist('tiers') is not None:
+		results=results.filter(tiers in_(request.form.getlist('tiers'))
+	if request.form.getlist('status') is not None:
+		results=results.filter(status in_(request.form.getlist('status'))
+	if request.form.getlist('race') is not None:
+		results=results.filter(race in_(request.form.getlist('race'))
+	if request.form.getlist('gender') is not None:
+		results=results.filter(gender in_(request.form.getlist('gender'))
+	#for names in data_names:
+		#if request.form.getlist(name) is not None:
+			#results=results.filter('{} in_ {}'.format(names,request.form.getlist(names))
+	
+		
+	
+	
