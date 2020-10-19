@@ -1,7 +1,7 @@
 # RTI-demo
 
-RTI database for students and teachers
-A completed project is hosted at rti-paa.herokuapp.com
+RTI database for students and teachers.
+A completed project is hosted at <a href="https://rti-paa.herokuapp.com" target="new">rti-paa.herokuapp.com</a>
 
 <br>User: Brian</br>
 <br>Password: ILoveRTI!</br>
